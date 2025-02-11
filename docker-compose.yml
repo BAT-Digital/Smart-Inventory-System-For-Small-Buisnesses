@@ -7,10 +7,10 @@ services:
     restart: always
     environment:
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: Guyuguyu121
-      POSTGRES_DB: inventorysystem
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
     volumes:
-      - ./dbdata:/var/lib/postgresql/data  # Maps to a local folder
+      - pgdata:/var/lib/postgresql/data  # Persistent storage
     ports:
       - "5432:5432"
 
@@ -22,8 +22,12 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin123
     volumes:
-      - ./pgadmin-data:/var/lib/pgadmin  # Maps to a local folder
+      - pgadmin-data:/var/lib/pgadmin  # Persist pgAdmin settings
     ports:
       - "5050:80"
     depends_on:
       - postgres
+
+volumes:
+  pgdata:      # Volume for PostgreSQL data
+  pgadmin-data: # Volume for pgAdmin settings
