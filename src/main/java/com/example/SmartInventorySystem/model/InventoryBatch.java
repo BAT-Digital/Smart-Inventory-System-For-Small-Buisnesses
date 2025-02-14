@@ -24,7 +24,7 @@ public class InventoryBatch {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "unit_cost", nullable = false, precision = 10, scale = 2)
+    @Column(name = "unit_cost", nullable = false, precision = 10)
     private BigDecimal unitCost;
 
     @Column(name = "expiration_date")

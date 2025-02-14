@@ -29,7 +29,7 @@ services:
       - postgres
 
   app:
-    build: .  # Assumes you have a Dockerfile in the same directory
+    build: .
     container_name: spring_boot_app
     restart: always
     environment:
@@ -38,8 +38,11 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
     ports:
       - "8080:8080"
+    volumes:
+      - .:/app
     depends_on:
       - postgres
+    command: ["./mvnw", "spring-boot:run"]
 
 volumes:
   pgdata:      # Volume for PostgreSQL data

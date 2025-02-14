@@ -21,7 +21,7 @@ public class TransactionLine {
     @Column(nullable = false)
     private Integer quantityChange;  // Negative for deductions (e.g., sales), positive for additions
 
-    @Column(precision = 10, scale = 2)
+    @Column(precision = 10)
     private Double unitCost;  // Capture the cost at the time of transaction, if needed
 
     // Constructors, Getters, and Setters

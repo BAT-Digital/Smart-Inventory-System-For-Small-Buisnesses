@@ -24,7 +24,7 @@ public class InventoryTransaction {
     @Column(name = "user_id")
     private int userID;  // Make sure the User entity exists if you choose to include this.
 
-    @Column(name = "total_amount",precision = 10, scale = 2)
+    @Column(name = "total_amount",precision = 10)
     private Double totalAmount;  // Optional: total amount of the transaction
 
     // Constructors, Getters, and Setters

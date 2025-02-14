@@ -1,23 +1,22 @@
-# Используем базовый образ с JDK 17
-FROM eclipse-temurin:17-jdk AS build
+# Use an official OpenJDK runtime as a parent image
+FROM eclipse-temurin:17-jdk-jammy
 
-# Устанавливаем рабочую директорию внутри контейнера
+# Set the working directory inside the container
 WORKDIR /app
 
-# Копируем файлы проекта в контейнер
-COPY . .
+# Copy the Maven wrapper and pom.xml first (to leverage Docker layer caching)
+COPY .mvn/ .mvn
+COPY mvnw .
+COPY pom.xml .
 
-# Собираем JAR-файл с помощью Maven
-RUN ./mvnw clean package -DskipTests
+# Copy the source code
+COPY src ./src
 
-# Используем легковесный JDK-образ для запуска
-FROM eclipse-temurin:17-jre
+# Install Maven and build the application
+RUN ./mvnw clean install -DskipTests
 
-# Устанавливаем рабочую директорию
-WORKDIR /app
+# Expose the application port
+EXPOSE 8080
 
-# Копируем собранный JAR из предыдущего контейнера
-COPY --from=build /app/target/SmartInventorySystem-0.0.1-SNAPSHOT.jar app.jar
-
-# Запускаем приложение
-CMD ["java", "-jar", "app.jar"]
+# Run the application
+CMD ["./mvnw", "spring-boot:run"]
