@@ -22,7 +22,7 @@ public class ProductController {
 
     @GetMapping("/test")
     public String test() {
-        return "Something is working";
+        return "Something is changed";
     }
 
     @GetMapping("/{productId}")
