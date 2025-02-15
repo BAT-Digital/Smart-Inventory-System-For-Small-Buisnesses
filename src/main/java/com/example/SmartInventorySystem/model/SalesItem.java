@@ -25,7 +25,4 @@ public class SalesItem {
 
     @Column(name = "quantity", nullable = false, precision = 10, scale = 2)
     private BigDecimal quantity;
-
-    @Column(name = "price", precision = 10, scale = 2)
-    private BigDecimal price;
 }

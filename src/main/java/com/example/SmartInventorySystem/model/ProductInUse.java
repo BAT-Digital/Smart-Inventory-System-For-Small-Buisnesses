@@ -2,12 +2,14 @@ package com.example.SmartInventorySystem.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @Entity
 @Table(name = "products_in_use")
-public class Product_in_use {
+public class ProductInUse {
 
     @Id
     @Column(name = "product_id")
@@ -26,4 +28,7 @@ public class Product_in_use {
 
     @Column(name = "deassigned_date")
     private LocalDateTime deassignedDate;
+
+    @Column(name = "volume", nullable = false, precision = 10, scale = 2)
+    private BigDecimal volume;
 }
