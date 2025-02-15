@@ -1,34 +1,33 @@
 package com.example.SmartInventorySystem.model;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 public class Product {
 
     @Id
-    private Long product_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "product_id")
+    private Long productId;
 
-    @Column(name = "name", nullable = false, length = 255)
-    private String name;
+    @Column(name = "product_name", nullable = false, length = 100)
+    private String productName;
+
+    @Column(name = "barcode", nullable = false, length = 50, unique = true)
+    private String barcode;
+
+    @Column(name = "is_perishable", nullable = false)
+    private Boolean isPerishable;
+
+    @Column(name = "unit_of_measure", nullable = false, length = 20)
+    private String unitOfMeasure;
+
+    @Column(name = "supplier", length = 100)
+    private String supplier;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
-
-    @Column(name = "category",length = 100)
-    private String category;
-
-    @Column(name = "perishable", nullable = false)
-    private Boolean perishable = false;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
 }
