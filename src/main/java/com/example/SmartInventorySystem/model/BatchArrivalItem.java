@@ -22,7 +22,7 @@ public class BatchArrivalItem {
 
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "product_id", nullable = false)
-    private Product_in_use product;
+    private ProductInUse product;
 
     @Column(name = "quantity_received", nullable = false, precision = 10, scale = 2)
     private BigDecimal quantityReceived;
