@@ -30,10 +30,9 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found with id " + productId));
 
-        product.setName(productDetails.getName());
+        product.setProductName(productDetails.getProductName());
         product.setDescription(productDetails.getDescription());
-        product.setCategory(productDetails.getCategory());
-        product.setPerishable(productDetails.getPerishable());
+        product.setIsPerishable(productDetails.getIsPerishable());
 
         return productRepository.save(product);
     }
