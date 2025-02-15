@@ -15,7 +15,7 @@ public class WriteOff {
     @Column(name = "write_off_id")
     private Long writeOffId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "batch_item_id", referencedColumnName = "batch_item_id", nullable = false)
     private BatchArrivalItem batch;
 

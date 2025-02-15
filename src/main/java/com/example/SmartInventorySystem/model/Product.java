@@ -34,8 +34,9 @@ public class Product {
     @Column(name = "unit_of_measure", nullable = false, length = 20)
     private String unitOfMeasure;
 
-    @Column(name = "supplier", length = 100)
-    private String supplier;
+    @ManyToOne
+    @JoinColumn(name = "supplier_id", referencedColumnName = "supplier_id")
+    private Supplier supplier;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;

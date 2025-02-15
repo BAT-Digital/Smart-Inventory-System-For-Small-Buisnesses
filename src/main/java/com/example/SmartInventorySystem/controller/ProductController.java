@@ -20,11 +20,6 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "Something is changed";
-    }
-
     @GetMapping("/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable Long productId) {
         return productService.getProductById(productId)
