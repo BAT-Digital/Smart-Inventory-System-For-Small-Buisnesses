@@ -1,5 +1,6 @@
 package com.example.SmartInventorySystem.controller.crud;
 
+import com.example.SmartInventorySystem.dto.BatchArrivalDTO;
 import com.example.SmartInventorySystem.model.BatchArrival;
 import com.example.SmartInventorySystem.service.crud.BatchArrivalService;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +31,9 @@ public class BatchArrivalController {
     }
 
     @PostMapping
-    public BatchArrival createBatchArrival(@RequestBody BatchArrival batchArrival) {
-        return batchArrivalService.createBatchArrival(batchArrival);
+    public ResponseEntity<String> processBatchArrivals(@RequestBody List<BatchArrivalDTO> batchArrivalDTOs) {
+        String result = batchArrivalService.processBatchArrivals(batchArrivalDTOs);
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/{id}")

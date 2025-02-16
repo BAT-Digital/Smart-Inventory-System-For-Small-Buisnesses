@@ -22,4 +22,8 @@ public class BatchArrival {
 
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
+    @ManyToOne
+
+    @JoinColumn(name = "added_by", referencedColumnName = "user_id", nullable = false)
+    private User addedBy;
 }

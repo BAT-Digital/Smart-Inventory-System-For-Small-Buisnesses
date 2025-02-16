@@ -1,5 +1,6 @@
 package com.example.SmartInventorySystem.controller.crud;
 
+import com.example.SmartInventorySystem.dto.IncomingBatchProductRequestDTO;
 import com.example.SmartInventorySystem.model.Product;
 import com.example.SmartInventorySystem.service.crud.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,9 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.createProduct(product);
+    public ResponseEntity<String> processProducts(@RequestBody IncomingBatchProductRequestDTO productRequestDTOS) {
+        String result = productService.createProduct(productRequestDTOS);
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/{productId}")
