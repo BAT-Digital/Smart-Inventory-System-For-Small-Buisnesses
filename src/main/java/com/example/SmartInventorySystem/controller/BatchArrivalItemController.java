@@ -1,8 +1,8 @@
-package com.example.SmartInventorySystem.controller.crud;
+package com.example.SmartInventorySystem.controller;
 
 import com.example.SmartInventorySystem.dto.BatchArrivalItemDTO;
 import com.example.SmartInventorySystem.model.BatchArrivalItem;
-import com.example.SmartInventorySystem.service.crud.BatchArrivalItemService;
+import com.example.SmartInventorySystem.service.BatchArrivalItemService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

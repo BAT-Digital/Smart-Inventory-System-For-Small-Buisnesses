@@ -1,15 +1,12 @@
-package com.example.SmartInventorySystem.service.crud;
+package com.example.SmartInventorySystem.service;
 
 import com.example.SmartInventorySystem.dto.IncomingBatchProductRequestDTO;
-import com.example.SmartInventorySystem.dto.ProductRequestDTO;
-import com.example.SmartInventorySystem.model.Category;
 import com.example.SmartInventorySystem.model.Product;
-import com.example.SmartInventorySystem.model.Supplier;
+
 import com.example.SmartInventorySystem.repository.crud.CategoryRepository;
 import com.example.SmartInventorySystem.repository.crud.ProductRepository;
 import com.example.SmartInventorySystem.repository.crud.SupplierRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

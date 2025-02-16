@@ -10,6 +10,7 @@ public class IncomingBatchProductRequestDTO {
     private String productName;
     private String barcode;
     private Boolean isPerishable;
+    private Boolean isComposite;
     private String unitOfMeasure;
     private Long supplierId;
     private String description;

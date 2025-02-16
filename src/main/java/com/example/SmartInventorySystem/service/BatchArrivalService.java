@@ -1,4 +1,4 @@
-package com.example.SmartInventorySystem.service.crud;
+package com.example.SmartInventorySystem.service;
 
 import com.example.SmartInventorySystem.model.BatchArrival;
 import com.example.SmartInventorySystem.model.Supplier;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.SmartInventorySystem.dto.BatchArrivalDTO;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,42 +36,31 @@ public class BatchArrivalService {
     }
 
     @Transactional
-    public String processBatchArrivals(List<BatchArrivalDTO> batchArrivalDTOs) {
-        StringBuilder responseMessage = new StringBuilder();
-        List<BatchArrival> arrivalsToSave = new ArrayList<>();
-
-        for (BatchArrivalDTO dto : batchArrivalDTOs) {
-            // Fetch Supplier
-            Optional<Supplier> supplierOpt = supplierRepository.findById(dto.getSupplierId());
-            if (!supplierOpt.isPresent()) {
-                responseMessage.append("Supplier not found for ID: ")
-                        .append(dto.getSupplierId()).append("\n");
-                continue;
-            }
-            Supplier supplier = supplierOpt.get();
-
-                BatchArrival batchArrival = new BatchArrival();
-                batchArrival.setSupplier(supplier);
-                batchArrival.setArrivalDate(dto.getArrivalDate());
-                batchArrival.setNotes(dto.getNotes());
-
-                // Fetch and set the User who added this batch arrival.
-                Optional<User> userOpt = userRepository.findById(dto.getAddedById());
-                if (userOpt.isPresent()) {
-                    batchArrival.setAddedBy(userOpt.get());
-                } else {
-                    responseMessage.append("User not found for ID: ")
-                            .append(dto.getAddedById()).append("\n");
-                    continue;
-                }
-                arrivalsToSave.add(batchArrival);
-                responseMessage.append("Created new BatchArrival for supplier ID ")
-                        .append(dto.getSupplierId()).append(" on date ")
-                        .append(dto.getArrivalDate()).append("\n");
-
+    public String processBatchArrival(BatchArrivalDTO dto) {
+        // Fetch Supplier
+        Optional<Supplier> supplierOpt = supplierRepository.findById(dto.getSupplierId());
+        if (!supplierOpt.isPresent()) {
+            return "Supplier not found for ID: " + dto.getSupplierId();
         }
-        batchArrivalRepository.saveAll(arrivalsToSave);
-        return responseMessage.toString();
+        Supplier supplier = supplierOpt.get();
+
+        // Create and map BatchArrival fields
+        BatchArrival batchArrival = new BatchArrival();
+        batchArrival.setSupplier(supplier);
+        batchArrival.setArrivalDate(dto.getArrivalDate());
+        batchArrival.setNotes(dto.getNotes());
+
+        // Fetch and set the User who added this batch arrival.
+        Optional<User> userOpt = userRepository.findById(dto.getAddedById());
+        if (!userOpt.isPresent()) {
+            return "User not found for ID: " + dto.getAddedById();
+        }
+        batchArrival.setAddedBy(userOpt.get());
+
+        // Save the new BatchArrival
+        batchArrivalRepository.save(batchArrival);
+        return "Created new BatchArrival for supplier ID " + dto.getSupplierId() +
+                " on date " + dto.getArrivalDate();
     }
     public BatchArrival updateBatchArrival(Long id, BatchArrival updatedBatchArrival) {
         return batchArrivalRepository.findById(id).map(batch -> {

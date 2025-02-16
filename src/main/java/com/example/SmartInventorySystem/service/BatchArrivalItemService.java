@@ -1,4 +1,4 @@
-package com.example.SmartInventorySystem.service.crud;
+package com.example.SmartInventorySystem.service;
 
 import com.example.SmartInventorySystem.dto.BatchArrivalItemDTO;
 import com.example.SmartInventorySystem.model.BatchArrival;
