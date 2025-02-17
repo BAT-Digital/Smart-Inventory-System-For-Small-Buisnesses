@@ -1,5 +1,6 @@
 package com.example.SmartInventorySystem.controller.crud;
 
+import com.example.SmartInventorySystem.dto.ProductRequestDTO;
 import com.example.SmartInventorySystem.model.ProductInUse;
 import com.example.SmartInventorySystem.service.crud.ProductInUseService;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,16 @@ public class ProductInUseController {
     public ProductInUseController(ProductInUseService productInUseService) {
         this.productInUseService = productInUseService;
     }
+
+
+
+    @PostMapping("/move-to-product-in-use")
+    public ResponseEntity<String> moveToProductInUse(@RequestBody List<ProductRequestDTO> productRequestDTOS) {
+        String result = productInUseService.moveToProductInUse(productRequestDTOS);
+        return ResponseEntity.ok(result);
+    }
+
+
 
     @GetMapping
     public List<ProductInUse> getAllProductsInUse() {

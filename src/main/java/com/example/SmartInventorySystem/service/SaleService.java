@@ -55,9 +55,9 @@ public class SaleService {
                             BigDecimal requiredVolume = ingredientRecipe.getQuantityRequired()
                                     .multiply(productDTO.getQuantity());
 
-                            if (ingredientStock.getVolume().compareTo(requiredVolume) >= 0) {
+                            if (ingredientStock.getVolumeRemaining().compareTo(requiredVolume) >= 0) {
                                 // Subtract required volume from stock
-                                ingredientStock.setVolume(ingredientStock.getVolume().subtract(requiredVolume));
+                                ingredientStock.setVolumeRemaining(ingredientStock.getVolumeRemaining().subtract(requiredVolume));
                                 productInUseRepository.save(ingredientStock);
                                 responseMessage.append("Updated ingredient: ").append(ingredient.getProductName()).append("\n");
                             } else {

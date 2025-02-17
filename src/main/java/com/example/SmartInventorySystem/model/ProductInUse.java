@@ -12,11 +12,12 @@ import java.time.LocalDateTime;
 public class ProductInUse {
 
     @Id
-    @Column(name = "product_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "product_in_use_id")
     private Long productId;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "product_id", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id", updatable = false)
     private Product product;
 
     @ManyToOne
@@ -26,9 +27,9 @@ public class ProductInUse {
     @Column(name = "assigned_date", nullable = false, updatable = false)
     private LocalDateTime assignedDate = LocalDateTime.now();
 
-    @Column(name = "deassigned_date")
-    private LocalDateTime deassignedDate;
+    @Column(name = "volume_received", nullable = false, precision = 10, scale = 2)
+    private BigDecimal volumeReceived;
 
-    @Column(name = "volume", nullable = false, precision = 10, scale = 2)
-    private BigDecimal volume;
+    @Column(name = "volume_remaining", nullable = false, precision = 10, scale = 2)
+    private BigDecimal volumeRemaining;
 }
