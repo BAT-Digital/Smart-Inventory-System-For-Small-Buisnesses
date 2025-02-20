@@ -17,7 +17,7 @@ public class SalesTransaction {
     private Long transactionId;
 
     @Column(name = "transaction_date", nullable = false)
-    private LocalDateTime transactionDate;
+    private LocalDateTime transactionDate = LocalDateTime.now();
 
     @Column(name = "total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount;

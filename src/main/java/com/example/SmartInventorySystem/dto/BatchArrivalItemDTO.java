@@ -11,6 +11,5 @@ public class BatchArrivalItemDTO {
     private Long productId;
     private BigDecimal quantityReceived;
     private LocalDate expiryDate;
-    private LocalDate receivedDate;
     private BigDecimal unitCost;
 }

@@ -47,7 +47,6 @@ public class BatchArrivalService {
         // Create and map BatchArrival fields
         BatchArrival batchArrival = new BatchArrival();
         batchArrival.setSupplier(supplier);
-        batchArrival.setArrivalDate(dto.getArrivalDate());
         batchArrival.setNotes(dto.getNotes());
 
         // Fetch and set the User who added this batch arrival.
@@ -59,9 +58,10 @@ public class BatchArrivalService {
 
         // Save the new BatchArrival
         batchArrivalRepository.save(batchArrival);
-        return "Created new BatchArrival for supplier ID " + dto.getSupplierId() +
-                " on date " + dto.getArrivalDate();
+        return "Created new BatchArrival for supplier ID " + dto.getSupplierId();
     }
+
+
     public BatchArrival updateBatchArrival(Long id, BatchArrival updatedBatchArrival) {
         return batchArrivalRepository.findById(id).map(batch -> {
             batch.setSupplier(updatedBatchArrival.getSupplier());

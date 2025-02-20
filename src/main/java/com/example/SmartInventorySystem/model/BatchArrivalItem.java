@@ -33,10 +33,6 @@ public class BatchArrivalItem {
     @Column(name = "expiry_date")
     private LocalDate expiryDate;
 
-    @Column(name = "received_date", nullable = false, updatable = false)
-    private LocalDate receivedDate = LocalDate.now();
-
     @Column(name = "unit_cost", precision = 10, scale = 2)
     private BigDecimal unitCost;
-
 }
