@@ -30,7 +30,7 @@ public class BatchArrivalItemController {
         return batchArrivalItem.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/process")
+    @PostMapping("/")
     public ResponseEntity<String> processBatchArrivalItems(@RequestBody List<BatchArrivalItemDTO> batchArrivalItemDTOs) {
         String result = batchArrivalItemService.processBatchArrivalItems(batchArrivalItemDTOs);
         return ResponseEntity.ok(result);
