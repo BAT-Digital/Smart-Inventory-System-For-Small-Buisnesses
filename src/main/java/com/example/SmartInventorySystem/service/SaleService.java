@@ -57,7 +57,7 @@ public class SaleService {
 
                             if (ingredientStock.getVolumeRemaining().compareTo(requiredVolume) >= 0) {
                                 // Subtract required volume from stock
-                                ingredientStock.setVolumeRemaining(ingredientStock.getVolumeRemaining().subtract(requiredVolume));
+                                ingredientStock.setVolumeRemaining(ingredientStock.getVolumeRemaining() .subtract(requiredVolume));
                                 productInUseRepository.save(ingredientStock);
                                 responseMessage.append("Updated ingredient: ").append(ingredient.getProductName()).append("\n");
                             } else {

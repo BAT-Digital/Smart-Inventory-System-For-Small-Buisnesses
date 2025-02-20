@@ -38,8 +38,4 @@ public class BatchArrivalItem {
 
     @Column(name = "unit_cost", precision = 10, scale = 2)
     private BigDecimal unitCost;
-
-    @ManyToOne
-    @JoinColumn(name = "added_by", referencedColumnName = "user_id", nullable = false)
-    private User addedBy;
 }
