@@ -78,17 +78,17 @@ public class ProductInUseService {
             if (optionalProductInUse.isPresent()) {
                 productInUse = optionalProductInUse.get();
 
-                newVolumeReceived = productInUse.getVolumeRemaining().add(productDTO.getQuantity());
+                newVolumeReceived = productInUse.getVolumeRemaining().add(productDTO.getQuantity().multiply(product.getVolume()));
 
                 // Log the deassigned productInUse
                 WriteOff writeOff = new WriteOff();
                 writeOff.setBatch(batchItem);
-                writeOff.setQuantity(productInUse.getVolumeReceived().subtract(productInUse.getVolumeRemaining()));
+                writeOff.setQuantity(productInUse.getVolumeReceived().subtract(productInUse.getVolumeRemaining().multiply(product.getVolume())));
                 writeOff.setReason("De-assigned from Product In Use");
                 writeOffRepository.save(writeOff);
             } else {
                 productInUse = new ProductInUse();
-                newVolumeReceived = productDTO.getQuantity();
+                newVolumeReceived = productDTO.getQuantity().multiply(product.getVolume());
             }
 
             productInUse.setProduct(product);

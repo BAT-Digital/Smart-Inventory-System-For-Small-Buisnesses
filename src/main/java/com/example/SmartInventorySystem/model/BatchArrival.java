@@ -18,12 +18,12 @@ public class BatchArrival {
     private Supplier supplier;
 
     @Column(name = "arrival_date", nullable = false)
-    private LocalDateTime arrivalDate;
+    private LocalDateTime arrivalDate = LocalDateTime.now();
 
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
-    @ManyToOne
 
+    @ManyToOne
     @JoinColumn(name = "added_by", referencedColumnName = "user_id", nullable = false)
     private User addedBy;
 }
