@@ -2,6 +2,7 @@ package com.example.SmartInventorySystem.service.crud;
 
 import com.example.SmartInventorySystem.model.User;
 import com.example.SmartInventorySystem.repository.crud.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,9 +13,11 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> getAllUsers() {
@@ -27,6 +30,7 @@ public class UserService {
 
     public User createUser(User user) {
         user.setCreatedAt(LocalDateTime.now());
+        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
         return userRepository.save(user);
     }
 
