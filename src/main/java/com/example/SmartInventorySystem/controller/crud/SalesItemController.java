@@ -29,6 +29,13 @@ public class SalesItemController {
         return salesItem.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // returns all sales items by transaction id
+    @GetMapping("/transaction/{transactionId}")
+    public ResponseEntity<List<SalesItem>> getSalesItemsByTransactionId(@PathVariable Long transactionId) {
+        List<SalesItem> salesItems = salesItemService.getSalesItemsByTransactionId(transactionId);
+        return ResponseEntity.ok(salesItems);
+    }
+
     @PostMapping
     public SalesItem createSalesItem(@RequestBody SalesItem salesItem) {
         return salesItemService.createSalesItem(salesItem);

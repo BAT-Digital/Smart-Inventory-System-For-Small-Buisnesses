@@ -1,5 +1,6 @@
 package com.example.SmartInventorySystem.controller.crud;
 
+import com.example.SmartInventorySystem.dto.CategoryDTO;
 import com.example.SmartInventorySystem.model.Category;
 import com.example.SmartInventorySystem.service.crud.CategoryService;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +31,8 @@ public class CategoryController {
     }
 
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
-        return categoryService.createCategory(category);
+    public Category createCategory(@RequestBody CategoryDTO categoryDTO) {
+        return categoryService.createCategory(categoryDTO);
     }
 
     @PutMapping("/{id}")

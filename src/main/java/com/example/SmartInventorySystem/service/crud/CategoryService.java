@@ -1,7 +1,9 @@
 package com.example.SmartInventorySystem.service.crud;
 
+import com.example.SmartInventorySystem.dto.CategoryDTO;
 import com.example.SmartInventorySystem.model.Category;
 import com.example.SmartInventorySystem.repository.crud.CategoryRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +26,12 @@ public class CategoryService {
         return categoryRepository.findById(id);
     }
 
-    public Category createCategory(Category category) {
+    @Transactional
+    public Category createCategory(CategoryDTO dto) {
+        Category category = new Category();
+        category.setName(dto.getName());
+        category.setDescription(dto.getDescription());
+
         return categoryRepository.save(category);
     }
 

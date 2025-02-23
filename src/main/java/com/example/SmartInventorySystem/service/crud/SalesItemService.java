@@ -20,6 +20,10 @@ public class SalesItemService {
         return salesItemRepository.findAll();
     }
 
+    public List<SalesItem> getSalesItemsByTransactionId(Long transactionId) {
+        return salesItemRepository.findBySalesTransaction_TransactionId(transactionId);
+    }
+
     public Optional<SalesItem> getSalesItemById(Long id) {
         return salesItemRepository.findById(id);
     }
