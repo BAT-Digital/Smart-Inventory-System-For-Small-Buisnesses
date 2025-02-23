@@ -40,4 +40,19 @@ public interface BatchArrivalItemRepository extends JpaRepository<BatchArrivalIt
             "FROM BatchArrivalItem bai " +
             "WHERE bai.product.productId = :productId")
     BigDecimal findRemainingStockByProduct(@Param("productId") Long productId);
+
+    @Query(value = """
+        SELECT bai.* 
+        FROM batch_arrival_items bai
+        JOIN batch_arrivals ba ON bai.arrival_id = ba.arrival_id
+        WHERE ba.arrival_date = (
+            SELECT MIN(ba_inner.arrival_date)
+            FROM batch_arrival_items bai_inner
+            JOIN batch_arrivals ba_inner ON bai_inner.arrival_id = ba_inner.arrival_id
+            WHERE bai_inner.product_id = bai.product_id
+        )
+        AND bai.quantity_remaining < 0.3 * bai.quantity_received
+        """,
+            nativeQuery = true)
+    List<BatchArrivalItem> findOldestBatchesWithLowRemaining();
 }

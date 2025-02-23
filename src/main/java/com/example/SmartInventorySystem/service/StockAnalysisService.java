@@ -32,4 +32,8 @@ public class StockAnalysisService {
     public List<BatchArrivalItem> findExpiringProducts(LocalDate thresholdDate) {
         return batchArrivalItemRepository.findByExpiryDateBefore(thresholdDate);
     }
+
+    public List<BatchArrivalItem> getOldestBatchesWithLowRemaining() {
+        return batchArrivalItemRepository.findOldestBatchesWithLowRemaining();
+    }
 }

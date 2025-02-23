@@ -1,11 +1,13 @@
 package com.example.SmartInventorySystem.controller;
 
+import com.example.SmartInventorySystem.model.BatchArrivalItem;
 import com.example.SmartInventorySystem.model.Category;
 import com.example.SmartInventorySystem.model.Product;
 import com.example.SmartInventorySystem.repository.crud.BatchArrivalItemRepository;
 import com.example.SmartInventorySystem.repository.crud.SalesItemRepository;
 import com.example.SmartInventorySystem.service.InventoryAnalysisService;
 import com.example.SmartInventorySystem.service.SalesTrendAnalysisService;
+import com.example.SmartInventorySystem.service.StockAnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +33,9 @@ public class DashboardController {
 
     @Autowired
     private BatchArrivalItemRepository batchArrivalItemRepository;
+
+    @Autowired
+    private StockAnalysisService stockAnalysisService;
 
     @GetMapping("/inventory-turnover")
     public BigDecimal getInventoryTurnoverRatio() {
@@ -58,5 +63,11 @@ public class DashboardController {
     @GetMapping("/top-performing-products")
     public List<Product> findTopPerformingProducts() {
         return inventoryService.findTopPerformingProducts();
+    }
+
+    //For Recommended to buy
+    @GetMapping("/oldest-low-remaining-batches")
+    public List<BatchArrivalItem> getOldestBatchesWithLowRemaining() {
+        return stockAnalysisService.getOldestBatchesWithLowRemaining();
     }
 }
