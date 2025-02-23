@@ -70,6 +70,10 @@ public class BatchArrivalItemService {
         return responseMessage.toString();
     }
 
+    public List<BatchArrivalItem> getBatchArrivalItemsByArrivalId(Long arrivalId) {
+        return batchArrivalItemRepository.findByBatchArrivalArrivalId(arrivalId);
+    }
+
     public List<BatchArrivalItem> getAllBatchArrivalItems() {
         return batchArrivalItemRepository.findAll();
     }

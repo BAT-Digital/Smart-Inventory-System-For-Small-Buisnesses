@@ -24,6 +24,11 @@ public class BatchArrivalItemController {
         return batchArrivalItemService.getAllBatchArrivalItems();
     }
 
+    @GetMapping("/{arrivalId}/items")
+    public List<BatchArrivalItem> getBatchArrivalItems(@PathVariable Long arrivalId) {
+        return batchArrivalItemService.getBatchArrivalItemsByArrivalId(arrivalId);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<BatchArrivalItem> getBatchArrivalItemById(@PathVariable Long id) {
         Optional<BatchArrivalItem> batchArrivalItem = batchArrivalItemService.getBatchArrivalItemById(id);

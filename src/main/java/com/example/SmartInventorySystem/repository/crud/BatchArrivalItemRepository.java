@@ -55,4 +55,6 @@ public interface BatchArrivalItemRepository extends JpaRepository<BatchArrivalIt
         """,
             nativeQuery = true)
     List<BatchArrivalItem> findOldestBatchesWithLowRemaining();
+
+    List<BatchArrivalItem> findByBatchArrivalArrivalId(Long arrivalId);
 }
