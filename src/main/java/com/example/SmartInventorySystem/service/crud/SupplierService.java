@@ -1,5 +1,6 @@
 package com.example.SmartInventorySystem.service.crud;
 
+import com.example.SmartInventorySystem.dto.SupplierDTO;
 import com.example.SmartInventorySystem.model.Supplier;
 import com.example.SmartInventorySystem.repository.crud.SupplierRepository;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,14 @@ public class SupplierService {
 
     public Optional<Supplier> getSupplierById(Long id) {
         return supplierRepository.findById(id);
+    }
+
+    public Supplier createSupplierByDto(SupplierDTO supplierDTO) {
+        Supplier supplier = new Supplier();
+        supplier.setName(supplierDTO.getName());
+        supplier.setAddress(supplierDTO.getAddress());
+        supplier.setContactInfo(supplierDTO.getContactInfo());
+        return supplierRepository.save(supplier);
     }
 
     public Supplier createSupplier(Supplier supplier) {

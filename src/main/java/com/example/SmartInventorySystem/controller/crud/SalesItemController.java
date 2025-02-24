@@ -1,7 +1,9 @@
 package com.example.SmartInventorySystem.controller.crud;
 
+import com.example.SmartInventorySystem.dto.SalesItemDTO;
 import com.example.SmartInventorySystem.model.SalesItem;
 import com.example.SmartInventorySystem.service.crud.SalesItemService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +38,13 @@ public class SalesItemController {
         return ResponseEntity.ok(salesItems);
     }
 
-    @PostMapping
+    @PostMapping("/create-by-dto")
+    public ResponseEntity<SalesItem> createSalesItemByDTO(@RequestBody SalesItemDTO salesItemDTO) {
+        SalesItem createdSalesItem = salesItemService.createSalesItemByDTO(salesItemDTO);
+        return new ResponseEntity<>(createdSalesItem, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/create-by-entity")
     public SalesItem createSalesItem(@RequestBody SalesItem salesItem) {
         return salesItemService.createSalesItem(salesItem);
     }

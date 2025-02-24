@@ -33,15 +33,23 @@ public class SaleService {
         this.salesItemRepository = salesItemRepository;
     }
 
-    @Transactional
-    public String processSaleProduct(List<ProductRequestDTO> productRequestDTOS) {
-        StringBuilder responseMessage = new StringBuilder();
+    public SalesTransaction createNewCheck(String credentials) {
         SalesTransaction salesTransaction = new SalesTransaction();
+        salesTransaction.setCredentials(credentials);
+        salesTransaction.setStatus("PROCESSING");
+        salesTransaction.setTotalAmount(null); // Explicitly set to null
+        return salesTransactionRepository.save(salesTransaction);
+    }
+
+
+    @Transactional
+    public String processSellTransaction(Long transactionId, List<ProductRequestDTO> productRequestDTOS) {
+        StringBuilder responseMessage = new StringBuilder();
+        SalesTransaction salesTransaction = salesTransactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("SalesTransaction not found with ID: " + transactionId));
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         try {
-            salesTransaction = salesTransactionRepository.save(salesTransaction); // Save to get transaction ID
-
             for (ProductRequestDTO productDTO : productRequestDTOS) {
                 try {
                     Optional<Product> existingProduct = productRepository.findByBarcode(productDTO.getBarcode());
@@ -101,15 +109,6 @@ public class SaleService {
                             continue;
                         }
                     }
-
-                    // Log Sale
-                    SalesItem salesItem = new SalesItem();
-                    salesItem.setSalesTransaction(salesTransaction);
-                    salesItem.setProduct(product);
-                    salesItem.setQuantity(productDTO.getQuantity());
-
-                    salesItemRepository.save(salesItem);
-
                     // Calculate Total Amount
                     totalAmount = totalAmount.add(product.getPrice().multiply(productDTO.getQuantity()));
 
@@ -119,13 +118,31 @@ public class SaleService {
                 }
             }
 
-            // Update total amount in the transaction
+            // Update the sales transaction
             salesTransaction.setTotalAmount(totalAmount);
+            salesTransaction.setStatus("COMPLETED");
             salesTransactionRepository.save(salesTransaction);
         } catch (Exception e) {
             responseMessage.append("Error processing sale transaction: ").append(e.getMessage()).append("\n");
         }
 
         return responseMessage.toString();
+    }
+
+    @Transactional
+    public String cancelCheck(Long transactionId) {
+        SalesTransaction salesTransaction = salesTransactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("SalesTransaction not found with ID: " + transactionId));
+
+        // Delete associated sales items
+        List<SalesItem> salesItems = salesItemRepository.findBySalesTransaction(salesTransaction);
+        salesItemRepository.deleteAll(salesItems);
+
+        // Update the sales transaction
+        salesTransaction.setTotalAmount(BigDecimal.ZERO);
+        salesTransaction.setStatus("CANCELED");
+        salesTransactionRepository.save(salesTransaction);
+
+        return "Sale transaction canceled successfully.";
     }
 }

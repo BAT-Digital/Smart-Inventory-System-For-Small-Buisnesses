@@ -3,6 +3,7 @@ package com.example.SmartInventorySystem.repository.crud;
 import com.example.SmartInventorySystem.model.Category;
 import com.example.SmartInventorySystem.model.Product;
 import com.example.SmartInventorySystem.model.SalesItem;
+import com.example.SmartInventorySystem.model.SalesTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -50,4 +51,6 @@ public interface SalesItemRepository extends JpaRepository<SalesItem, Long> {
     BigDecimal findTotalSalesByProduct(@Param("productId") Long productId);
 
     List<SalesItem> findBySalesTransaction_TransactionId(Long transactionId);
+
+    List<SalesItem> findBySalesTransaction(SalesTransaction salesTransaction);
 }

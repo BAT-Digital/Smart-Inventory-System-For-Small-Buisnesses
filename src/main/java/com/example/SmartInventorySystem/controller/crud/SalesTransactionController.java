@@ -1,7 +1,9 @@
 package com.example.SmartInventorySystem.controller.crud;
 
+import com.example.SmartInventorySystem.dto.SalesTransactionDTO;
 import com.example.SmartInventorySystem.model.SalesTransaction;
 import com.example.SmartInventorySystem.service.crud.SalesTransactionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +31,13 @@ public class SalesTransactionController {
         return transaction.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/create-by-dto")
+    public ResponseEntity<SalesTransaction> createSalesTransactionByDto(@RequestBody SalesTransactionDTO salesTransactionDTO) {
+        SalesTransaction createdSalesTransaction = salesTransactionService.createSalesTransactionByDto(salesTransactionDTO);
+        return new ResponseEntity<>(createdSalesTransaction, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/create-by-entity")
     public SalesTransaction createTransaction(@RequestBody SalesTransaction transaction) {
         return salesTransactionService.createTransaction(transaction);
     }
