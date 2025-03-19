@@ -4,6 +4,7 @@ import com.example.SmartInventorySystem.dto.BatchArrivalDTO;
 import com.example.SmartInventorySystem.model.BatchArrival;
 import com.example.SmartInventorySystem.service.BatchArrivalService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +43,7 @@ public class BatchArrivalController {
         return updatedBatchArrival != null ? ResponseEntity.ok(updatedBatchArrival) : ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBatchArrival(@PathVariable Long id) {
         batchArrivalService.deleteBatchArrival(id);

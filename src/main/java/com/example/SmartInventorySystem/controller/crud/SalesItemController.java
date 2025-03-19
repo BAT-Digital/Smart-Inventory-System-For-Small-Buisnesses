@@ -5,6 +5,7 @@ import com.example.SmartInventorySystem.model.SalesItem;
 import com.example.SmartInventorySystem.service.crud.SalesItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,6 +56,7 @@ public class SalesItemController {
         return updatedItem != null ? ResponseEntity.ok(updatedItem) : ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSalesItem(@PathVariable Long id) {
         salesItemService.deleteSalesItem(id);
