@@ -16,6 +16,12 @@ public class SalesTransaction {
     @Column(name = "transaction_id")
     private Long transactionId;
 
+    @Column(name = "credentials")
+    private String credentials;
+
+    @Column(name = "status")
+    private String status;
+
     @Column(name = "transaction_date", nullable = false)
     private LocalDateTime transactionDate = LocalDateTime.now();
 

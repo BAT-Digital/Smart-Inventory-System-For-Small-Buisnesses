@@ -1,7 +1,9 @@
 package com.example.SmartInventorySystem.controller.crud;
 
+import com.example.SmartInventorySystem.dto.SupplierDTO;
 import com.example.SmartInventorySystem.model.Supplier;
 import com.example.SmartInventorySystem.service.crud.SupplierService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +31,13 @@ public class SupplierController {
         return supplier.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/create-by-dto")
+    public ResponseEntity<Supplier> createSupplierByDto(@RequestBody SupplierDTO supplierDTO) {
+        Supplier createdSupplier = supplierService.createSupplierByDto(supplierDTO);
+        return new ResponseEntity<>(createdSupplier, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/create-by-entity")
     public Supplier createSupplier(@RequestBody Supplier supplier) {
         return supplierService.createSupplier(supplier);
     }

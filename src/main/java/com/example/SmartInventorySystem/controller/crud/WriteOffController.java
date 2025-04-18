@@ -3,6 +3,7 @@ package com.example.SmartInventorySystem.controller.crud;
 import com.example.SmartInventorySystem.model.WriteOff;
 import com.example.SmartInventorySystem.service.crud.WriteOffService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class WriteOffController {
         return updatedWriteOff != null ? ResponseEntity.ok(updatedWriteOff) : ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteWriteOff(@PathVariable Long id) {
         writeOffService.deleteWriteOff(id);

@@ -1,8 +1,11 @@
 package com.example.SmartInventorySystem.controller.crud;
 
+import com.example.SmartInventorySystem.dto.SalesItemDTO;
 import com.example.SmartInventorySystem.model.SalesItem;
 import com.example.SmartInventorySystem.service.crud.SalesItemService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +32,20 @@ public class SalesItemController {
         return salesItem.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    // returns all sales items by transaction id
+    @GetMapping("/transaction/{transactionId}")
+    public ResponseEntity<List<SalesItem>> getSalesItemsByTransactionId(@PathVariable Long transactionId) {
+        List<SalesItem> salesItems = salesItemService.getSalesItemsByTransactionId(transactionId);
+        return ResponseEntity.ok(salesItems);
+    }
+
+    @PostMapping("/create-by-dto")
+    public ResponseEntity<SalesItem> createSalesItemByDTO(@RequestBody SalesItemDTO salesItemDTO) {
+        SalesItem createdSalesItem = salesItemService.createSalesItemByDTO(salesItemDTO);
+        return new ResponseEntity<>(createdSalesItem, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/create-by-entity")
     public SalesItem createSalesItem(@RequestBody SalesItem salesItem) {
         return salesItemService.createSalesItem(salesItem);
     }
@@ -40,6 +56,7 @@ public class SalesItemController {
         return updatedItem != null ? ResponseEntity.ok(updatedItem) : ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSalesItem(@PathVariable Long id) {
         salesItemService.deleteSalesItem(id);
