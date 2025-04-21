@@ -1,7 +1,8 @@
 package com.example.SmartInventorySystem.shared.controller;
 
+import com.example.SmartInventorySystem.salestransaction.entity.SalesTransaction;
 import com.example.SmartInventorySystem.shared.dto.ProductRequestDTO;
-import com.example.SmartInventorySystem.model.SalesTransaction;
+
 import com.example.SmartInventorySystem.shared.service.SaleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

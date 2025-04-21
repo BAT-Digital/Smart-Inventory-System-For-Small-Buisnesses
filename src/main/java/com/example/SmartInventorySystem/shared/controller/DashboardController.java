@@ -1,7 +1,8 @@
 package com.example.SmartInventorySystem.shared.controller;
 
 import com.example.SmartInventorySystem.batcharrivalitem.entity.BatchArrivalItem;
-import com.example.SmartInventorySystem.model.Category;
+
+import com.example.SmartInventorySystem.category.entity.Category;
 import com.example.SmartInventorySystem.product.entity.Product;
 import com.example.SmartInventorySystem.batcharrivalitem.repository.BatchArrivalItemRepository;
 import com.example.SmartInventorySystem.saleitem.repository.SalesItemRepository;
