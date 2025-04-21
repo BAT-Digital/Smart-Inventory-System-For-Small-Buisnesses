@@ -1,11 +1,12 @@
 package com.example.SmartInventorySystem.product.service;
 
+import com.example.SmartInventorySystem.category.repository.CategoryRepository;
 import com.example.SmartInventorySystem.product.entity.Product;
 import com.example.SmartInventorySystem.product.repository.ProductRepository;
 import com.example.SmartInventorySystem.shared.dto.IncomingBatchProductRequestDTO;
 
-import com.example.SmartInventorySystem.repository.CategoryRepository;
-import com.example.SmartInventorySystem.repository.SupplierRepository;
+
+import com.example.SmartInventorySystem.supplier.repository.SupplierRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,8 @@
 package com.example.SmartInventorySystem.product.entity;
 
-import com.example.SmartInventorySystem.model.Category;
-import com.example.SmartInventorySystem.model.Supplier;
+
+import com.example.SmartInventorySystem.category.entity.Category;
+import com.example.SmartInventorySystem.supplier.entity.Supplier;
 import jakarta.persistence.*;
 import lombok.Data;
 
