@@ -1,7 +1,6 @@
 package com.example.SmartInventorySystem.shared.dto;
 
 import lombok.Data;
-
 import java.math.BigDecimal;
 
 @Data
