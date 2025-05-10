@@ -36,11 +36,11 @@ public class BatchArrivalService {
     }
 
     @Transactional
-    public String processBatchArrival(BatchArrivalDTO dto) {
+    public BatchArrival processBatchArrival(BatchArrivalDTO dto) {
         // Fetch Supplier
         Optional<Supplier> supplierOpt = supplierRepository.findById(dto.getSupplierId());
         if (!supplierOpt.isPresent()) {
-            return "Supplier not found for ID: " + dto.getSupplierId();
+            return null;
         }
         Supplier supplier = supplierOpt.get();
 
@@ -52,13 +52,13 @@ public class BatchArrivalService {
         // Fetch and set the User who added this batch arrival.
         Optional<User> userOpt = userRepository.findById(dto.getAddedById());
         if (!userOpt.isPresent()) {
-            return "User not found for ID: " + dto.getAddedById();
+            return null;
         }
         batchArrival.setAddedBy(userOpt.get());
 
         // Save the new BatchArrival
         batchArrivalRepository.save(batchArrival);
-        return "Created new BatchArrival for supplier ID " + dto.getSupplierId();
+        return batchArrival;
     }
 
 

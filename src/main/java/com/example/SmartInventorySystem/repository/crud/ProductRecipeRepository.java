@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ProductRecipeRepository extends JpaRepository<ProductRecipe, Long> {
     List<ProductRecipe> findByFinalProduct(Product finalProduct);
+    List<ProductRecipe> findByFinalProduct_ProductId(Long finalProductId);
 }
