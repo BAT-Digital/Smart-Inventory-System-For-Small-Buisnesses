@@ -32,8 +32,8 @@ public class BatchArrivalController {
     }
 
     @PostMapping
-    public ResponseEntity<String> processBatchArrivals(@RequestBody BatchArrivalDTO batchArrivalDTOs) {
-        String result = batchArrivalService.processBatchArrival(batchArrivalDTOs);
+    public ResponseEntity<BatchArrival> processBatchArrivals(@RequestBody BatchArrivalDTO batchArrivalDTOs) {
+        BatchArrival result = batchArrivalService.processBatchArrival(batchArrivalDTOs);
         return ResponseEntity.ok(result);
     }
 

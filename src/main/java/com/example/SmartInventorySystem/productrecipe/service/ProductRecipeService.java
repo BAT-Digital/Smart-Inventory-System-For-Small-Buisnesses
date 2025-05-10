@@ -3,6 +3,7 @@ package com.example.SmartInventorySystem.productrecipe.service;
 
 import com.example.SmartInventorySystem.productrecipe.entity.ProductRecipe;
 import com.example.SmartInventorySystem.productrecipe.repository.ProductRecipeRepository;
+import com.example.SmartInventorySystem.product.entity.Product;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +20,14 @@ public class ProductRecipeService {
 
     public List<ProductRecipe> getAllProductRecipes() {
         return productRecipeRepository.findAll();
+    }
+
+    public List<ProductRecipe> getByFinalProduct(Product product) {
+        return productRecipeRepository.findByFinalProduct(product);
+    }
+
+    public List<ProductRecipe> getByFinalProductId(Long productId) {
+        return productRecipeRepository.findByFinalProduct_ProductId(productId);
     }
 
     public Optional<ProductRecipe> getProductRecipeById(Long id) {

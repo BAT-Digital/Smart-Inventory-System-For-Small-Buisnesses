@@ -30,6 +30,16 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/by-category/{categoryName}")
+    public List<Product> getByCategoryName(@PathVariable String categoryName) {
+        return productService.getProductsByCategoryName(categoryName);
+    }
+
+    @GetMapping("/by-supplier/{supplierName}")
+    public List<Product> getBySupplierName(@PathVariable String supplierName) {
+        return productService.getProductsBySupplierName(supplierName);
+    }
+
     @PostMapping
     public ResponseEntity<String> processProducts(@RequestBody IncomingBatchProductRequestDTO productRequestDTOS) {
         String result = productService.createProduct(productRequestDTOS);
@@ -39,6 +49,11 @@ public class ProductController {
     @PutMapping("/{productId}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestBody Product productDetails) {
         return ResponseEntity.ok(productService.updateProduct(productId, productDetails));
+    }
+
+    @GetMapping("/composite/{isComposite}")
+    public List<Product> getProductsByIsComposite(@PathVariable Boolean isComposite) {
+        return productService.getProductsByIsComposite(isComposite);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

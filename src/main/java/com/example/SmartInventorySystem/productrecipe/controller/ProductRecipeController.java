@@ -31,6 +31,12 @@ public class ProductRecipeController {
         return productRecipe.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+
+    @GetMapping("/by-final-product-id/{productId}")
+    public List<ProductRecipe> getByFinalProductId(@PathVariable Long productId) {
+        return productRecipeService.getByFinalProductId(productId);
+    }
+
     @PostMapping
     public ProductRecipe createProductRecipe(@RequestBody ProductRecipe productRecipe) {
         return productRecipeService.createProductRecipe(productRecipe);

@@ -64,10 +64,21 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    public List<Product> getProductsByIsComposite(Boolean isComposite) {
+        return productRepository.findByIsComposite(isComposite);
+    }
+
+    public List<Product> getProductsByCategoryName(String categoryName) {
+        return productRepository.findByCategory_Name(categoryName);
+    }
+
+    public List<Product> getProductsBySupplierName(String supplierName) {
+        return productRepository.findBySupplier_Name(supplierName);
+    }
+
     public Optional<Product> getProductById(Long productId) {
         return productRepository.findById(productId);
     }
-
 
     public Product updateProduct(Long productId, Product productDetails) {
         Product product = productRepository.findById(productId)
