@@ -10,6 +10,7 @@ import com.example.SmartInventorySystem.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -80,6 +81,14 @@ public class BatchArrivalItemService {
 
     public Optional<BatchArrivalItem> getBatchArrivalItemById(Long id) {
         return batchArrivalItemRepository.findById(id);
+    }
+
+    public List<BatchArrivalItem> getByProductBarcode(String barcode) {
+        return batchArrivalItemRepository.findByProduct_Barcode(barcode);
+    }
+
+    public List<BatchArrivalItem> getByProductBarcodeAndExpiryDate(String barcode, LocalDate expiryDate) {
+        return batchArrivalItemRepository.findByProduct_BarcodeAndExpiryDate(barcode, expiryDate);
     }
 
     public BatchArrivalItem updateBatchArrivalItem(Long id, BatchArrivalItem updatedBatchArrivalItem) {

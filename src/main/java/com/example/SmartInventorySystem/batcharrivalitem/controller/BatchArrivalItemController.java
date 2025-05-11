@@ -3,10 +3,12 @@ package com.example.SmartInventorySystem.batcharrivalitem.controller;
 import com.example.SmartInventorySystem.batcharrivalitem.dto.BatchArrivalItemDTO;
 import com.example.SmartInventorySystem.batcharrivalitem.service.BatchArrivalItemService;
 import com.example.SmartInventorySystem.batcharrivalitem.entity.BatchArrivalItem;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +36,19 @@ public class BatchArrivalItemController {
     public ResponseEntity<BatchArrivalItem> getBatchArrivalItemById(@PathVariable Long id) {
         Optional<BatchArrivalItem> batchArrivalItem = batchArrivalItemService.getBatchArrivalItemById(id);
         return batchArrivalItem.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/by-barcode/{barcode}")
+    public List<BatchArrivalItem> getByBarcode(@PathVariable String barcode) {
+        return batchArrivalItemService.getByProductBarcode(barcode);
+    }
+
+    @GetMapping("/by-barcode-and-expiry")
+    public List<BatchArrivalItem> getByBarcodeAndExpiry(
+            @RequestParam String barcode,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expiryDate
+    ) {
+        return batchArrivalItemService.getByProductBarcodeAndExpiryDate(barcode, expiryDate);
     }
 
     @PostMapping("/")
