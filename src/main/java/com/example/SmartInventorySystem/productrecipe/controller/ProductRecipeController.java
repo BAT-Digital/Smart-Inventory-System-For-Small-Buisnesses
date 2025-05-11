@@ -1,6 +1,7 @@
 package com.example.SmartInventorySystem.productrecipe.controller;
 
 
+import com.example.SmartInventorySystem.productrecipe.dto.ProductRecipeDTO;
 import com.example.SmartInventorySystem.productrecipe.entity.ProductRecipe;
 
 import com.example.SmartInventorySystem.productrecipe.service.ProductRecipeService;
@@ -40,6 +41,11 @@ public class ProductRecipeController {
     @PostMapping
     public ProductRecipe createProductRecipe(@RequestBody ProductRecipe productRecipe) {
         return productRecipeService.createProductRecipe(productRecipe);
+    }
+
+    @PostMapping("/process-recipes")
+    public String processProductRecipes(@RequestBody List<ProductRecipeDTO> ProductRecipeDTOS) {
+        return productRecipeService.processProductRecipes(ProductRecipeDTOS);
     }
 
     @PutMapping("/{id}")
