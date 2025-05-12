@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -24,6 +25,8 @@ public class SalesItem {
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "product_id", nullable = false)
     private Product product;
+
+    private LocalDate expiryDate;
 
     @Column(name = "quantity", nullable = false, precision = 10, scale = 2)
     private BigDecimal quantity;

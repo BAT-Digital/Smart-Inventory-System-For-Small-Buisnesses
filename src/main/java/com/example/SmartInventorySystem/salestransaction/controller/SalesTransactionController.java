@@ -29,7 +29,6 @@ public class SalesTransactionController {
 
     @GetMapping("/by-status")
     public List<SalesTransaction> getByStatus(@RequestParam String status) {
-        System.out.println(status);
         return salesTransactionService.getTransactionsByStatus(status);
     }
 

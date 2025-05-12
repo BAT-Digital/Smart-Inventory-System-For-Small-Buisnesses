@@ -55,6 +55,7 @@ public class SalesItemService {
         salesItem.setProduct(product);
 
         // Set the quantity
+        salesItem.setExpiryDate(salesItemDTO.getExpiryDate());
         salesItem.setQuantity(salesItemDTO.getQuantity());
         return salesItemRepository.save(salesItem);
     }
