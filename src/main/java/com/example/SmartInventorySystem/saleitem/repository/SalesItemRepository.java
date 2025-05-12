@@ -3,11 +3,9 @@ package com.example.SmartInventorySystem.saleitem.repository;
 
 import com.example.SmartInventorySystem.saleitem.entity.SalesItem;
 import com.example.SmartInventorySystem.salestransaction.entity.SalesTransaction;
-import com.example.SmartInventorySystem.shared.dto.SaleRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import com.example.SmartInventorySystem.shared.dto.SaleRecord;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

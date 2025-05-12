@@ -4,8 +4,6 @@ import com.example.SmartInventorySystem.category.repository.CategoryRepository;
 import com.example.SmartInventorySystem.product.entity.Product;
 import com.example.SmartInventorySystem.product.repository.ProductRepository;
 import com.example.SmartInventorySystem.shared.dto.IncomingBatchProductRequestDTO;
-
-
 import com.example.SmartInventorySystem.supplier.repository.SupplierRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -41,8 +39,7 @@ public class ProductService {
         product.setProductName(productRequestDTO.getProductName());
         product.setBarcode(productRequestDTO.getBarcode());
         product.setIsPerishable(productRequestDTO.getIsPerishable());
-        // Set composite to false (or map from DTO if available)
-        product.setIsComposite(false);
+        product.setIsComposite(productRequestDTO.getIsComposite());
         product.setUnitOfMeasure(productRequestDTO.getUnitOfMeasure());
         product.setDescription(productRequestDTO.getDescription());
         product.setPrice(productRequestDTO.getPrice());
