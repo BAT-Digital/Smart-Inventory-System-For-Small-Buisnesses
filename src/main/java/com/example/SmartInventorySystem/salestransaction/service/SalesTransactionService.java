@@ -22,6 +22,10 @@ public class SalesTransactionService {
         return salesTransactionRepository.findAll();
     }
 
+    public List<SalesTransaction> getTransactionsByStatus(String status) {
+        return salesTransactionRepository.findByStatus(status);
+    }
+
     public Optional<SalesTransaction> getTransactionById(Long id) {
         return salesTransactionRepository.findById(id);
     }
