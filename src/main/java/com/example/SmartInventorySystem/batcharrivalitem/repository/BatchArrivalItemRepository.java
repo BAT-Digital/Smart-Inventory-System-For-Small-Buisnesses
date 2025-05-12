@@ -15,6 +15,9 @@ import java.util.Optional;
 public interface BatchArrivalItemRepository extends JpaRepository<BatchArrivalItem, Long> {
     Optional<BatchArrivalItem> findByProductAndExpiryDate(Product product, LocalDate expiryDate);
 
+    List<BatchArrivalItem> findByProduct_Barcode(String barcode);
+    List<BatchArrivalItem> findByProduct_BarcodeAndExpiryDate(String barcode, LocalDate expiryDate);
+
     @Query("SELECT AVG(bai.quantityRemaining * bai.unitCost) " +
             "FROM BatchArrivalItem bai " +
             "WHERE bai.batchArrival.arrivalDate BETWEEN :startDate AND :endDate")

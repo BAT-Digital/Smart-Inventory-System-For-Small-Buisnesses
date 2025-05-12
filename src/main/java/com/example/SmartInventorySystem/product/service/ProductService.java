@@ -39,6 +39,8 @@ public class ProductService {
         product.setProductName(productRequestDTO.getProductName());
         product.setBarcode(productRequestDTO.getBarcode());
         product.setIsPerishable(productRequestDTO.getIsPerishable());
+        // Set composite to false (or map from DTO if available)
+        product.setIsComposite(productRequestDTO.getIsComposite());
         product.setIsComposite(productRequestDTO.getIsComposite());
         product.setUnitOfMeasure(productRequestDTO.getUnitOfMeasure());
         product.setDescription(productRequestDTO.getDescription());
@@ -54,7 +56,7 @@ public class ProductService {
                 .ifPresent(product::setSupplier);
         // Save the new product
         productRepository.save(product);
-        return "Created new product: " + productRequestDTO.getProductName();
+        return product.getProductId().toString();
     }
 
     public List<Product> getAllProducts() {

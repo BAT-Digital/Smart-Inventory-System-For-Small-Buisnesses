@@ -27,6 +27,11 @@ public class SalesTransactionController {
         return salesTransactionService.getAllTransactions();
     }
 
+    @GetMapping("/by-status")
+    public List<SalesTransaction> getByStatus(@RequestParam String status) {
+        return salesTransactionService.getTransactionsByStatus(status);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<SalesTransaction> getTransactionById(@PathVariable Long id) {
         Optional<SalesTransaction> transaction = salesTransactionService.getTransactionById(id);
