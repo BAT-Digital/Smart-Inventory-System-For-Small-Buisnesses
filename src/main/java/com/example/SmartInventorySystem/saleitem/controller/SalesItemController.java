@@ -62,4 +62,10 @@ public class SalesItemController {
         salesItemService.deleteSalesItem(id);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/delete-items")
+    public ResponseEntity<Void> deleteSalesItems(@RequestBody List<Long> ids) {
+        salesItemService.deleteSalesItems(ids);
+        return ResponseEntity.noContent().build();
+    }
 }

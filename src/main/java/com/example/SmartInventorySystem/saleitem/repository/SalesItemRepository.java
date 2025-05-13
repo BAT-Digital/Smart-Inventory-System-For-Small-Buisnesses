@@ -4,6 +4,7 @@ package com.example.SmartInventorySystem.saleitem.repository;
 import com.example.SmartInventorySystem.saleitem.entity.SalesItem;
 import com.example.SmartInventorySystem.salestransaction.entity.SalesTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.math.BigDecimal;
@@ -60,6 +61,10 @@ public interface SalesItemRepository extends JpaRepository<SalesItem, Long> {
     GROUP BY FUNCTION('DATE', si.salesTransaction.transactionDate), si.product.productId
 """)
     List<Object[]> fetchAggregatedSales();
+
+    @Modifying
+    @Query("DELETE FROM SalesItem si WHERE si.salesTransaction.transactionId = :transactionId")
+    void deleteBySalesTransactionId(@Param("transactionId") Long transactionId);
 
 
 }
