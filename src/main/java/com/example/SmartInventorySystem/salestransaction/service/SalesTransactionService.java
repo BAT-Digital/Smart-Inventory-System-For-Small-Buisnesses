@@ -1,9 +1,11 @@
 package com.example.SmartInventorySystem.salestransaction.service;
 
+import com.example.SmartInventorySystem.saleitem.repository.SalesItemRepository;
 import com.example.SmartInventorySystem.salestransaction.dto.SalesTransactionDTO;
 
 import com.example.SmartInventorySystem.salestransaction.entity.SalesTransaction;
 import com.example.SmartInventorySystem.salestransaction.repository.SalesTransactionRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,8 +16,11 @@ public class SalesTransactionService {
 
     private final SalesTransactionRepository salesTransactionRepository;
 
-    public SalesTransactionService(SalesTransactionRepository salesTransactionRepository) {
+    private final SalesItemRepository salesItemRepository;
+
+    public SalesTransactionService(SalesTransactionRepository salesTransactionRepository, SalesItemRepository salesItemRepository) {
         this.salesTransactionRepository = salesTransactionRepository;
+        this.salesItemRepository = salesItemRepository;
     }
 
     public List<SalesTransaction> getAllTransactions() {
@@ -50,7 +55,9 @@ public class SalesTransactionService {
         }).orElse(null);
     }
 
+    @Transactional
     public void deleteTransaction(Long id) {
+        salesItemRepository.deleteBySalesTransactionId(id);
         salesTransactionRepository.deleteById(id);
     }
 }
