@@ -43,7 +43,7 @@ public class BatchArrivalController {
         return updatedBatchArrival != null ? ResponseEntity.ok(updatedBatchArrival) : ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBatchArrival(@PathVariable Long id) {
         batchArrivalService.deleteBatchArrival(id);
