@@ -3,6 +3,7 @@ package com.example.SmartInventorySystem.category.controller;
 import com.example.SmartInventorySystem.category.dto.CategoryDTO;
 import com.example.SmartInventorySystem.category.entity.Category;
 import com.example.SmartInventorySystem.category.service.CategoryService;
+import com.example.SmartInventorySystem.product.entity.Product;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,15 @@ public class CategoryController {
 
     @GetMapping
     public List<Category> getAllCategories() {
+        return categoryService.getAllCategories();
+    }
+
+    @GetMapping("/search")
+    public List<Category> getAllCategoriesSearch(
+            @RequestParam(required = false) String search) {
+        if (search != null && !search.isEmpty()) {
+            return categoryService.searchAllCategories(search);
+        }
         return categoryService.getAllCategories();
     }
 

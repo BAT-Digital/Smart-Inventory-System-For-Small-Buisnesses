@@ -1,5 +1,6 @@
 package com.example.SmartInventorySystem.productinuse.controller;
 
+import com.example.SmartInventorySystem.batcharrival.entity.BatchArrival;
 import com.example.SmartInventorySystem.productinuse.service.ProductInUseService;
 import com.example.SmartInventorySystem.productinuse.entity.ProductInUse;
 import com.example.SmartInventorySystem.shared.dto.ProductRequestDTO;
@@ -33,6 +34,16 @@ public class ProductInUseController {
     public List<ProductInUse> getAllProductsInUse() {
         return productInUseService.getAllProductsInUse();
     }
+
+    @GetMapping("/search")
+    public List<ProductInUse> getAllProductsInUseSearch(
+            @RequestParam(required = false) String search) {
+        if (search != null && !search.isEmpty()) {
+            return productInUseService.searchProductsInUse(search);
+        }
+        return productInUseService.getAllProductsInUse();
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductInUse> getProductInUseById(@PathVariable Long id) {
