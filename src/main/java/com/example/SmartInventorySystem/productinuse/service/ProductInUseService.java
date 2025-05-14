@@ -1,5 +1,6 @@
 package com.example.SmartInventorySystem.productinuse.service;
 
+import com.example.SmartInventorySystem.batcharrival.entity.BatchArrival;
 import com.example.SmartInventorySystem.batcharrivalitem.entity.BatchArrivalItem;
 import com.example.SmartInventorySystem.batcharrivalitem.repository.BatchArrivalItemRepository;
 import com.example.SmartInventorySystem.productinuse.entity.ProductInUse;
@@ -129,6 +130,11 @@ public class ProductInUseService {
 
     public List<ProductInUse> getAllProductsInUse() {
         return productInUseRepository.findAll();
+    }
+
+    public List<ProductInUse> searchProductsInUse(String searchTerm) {
+        return productInUseRepository.search(
+                searchTerm.toLowerCase() + "%");
     }
 
     public Optional<ProductInUse> getProductInUseById(Long id) {

@@ -1,5 +1,6 @@
 package com.example.SmartInventorySystem.product.controller;
 
+import com.example.SmartInventorySystem.batcharrival.entity.BatchArrival;
 import com.example.SmartInventorySystem.shared.dto.IncomingBatchProductRequestDTO;
 import com.example.SmartInventorySystem.product.entity.Product;
 import com.example.SmartInventorySystem.product.service.ProductService;
@@ -23,6 +24,16 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    @GetMapping("/search")
+    public List<Product> getAllProductsSearch(
+            @RequestParam(required = false) String search) {
+        if (search != null && !search.isEmpty()) {
+            return productService.searchAllProducts(search);
+        }
+        return productService.getAllProducts();
+    }
+
+
     @GetMapping("/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable Long productId) {
         return productService.getProductById(productId)
@@ -31,12 +42,18 @@ public class ProductController {
     }
 
     @GetMapping("/by-category/{categoryName}")
-    public List<Product> getByCategoryName(@PathVariable String categoryName) {
+    public List<Product> getByCategoryName(@PathVariable String categoryName, @RequestParam(required = false) String search) {
+        if (search != null && !search.isEmpty()) {
+            return productService.searchProductsByCategoryName(categoryName, search);
+        }
         return productService.getProductsByCategoryName(categoryName);
     }
 
     @GetMapping("/by-supplier/{supplierName}")
-    public List<Product> getBySupplierName(@PathVariable String supplierName) {
+    public List<Product> getBySupplierName(@PathVariable String supplierName, @RequestParam(required = false) String search) {
+        if (search != null && !search.isEmpty()) {
+            return productService.searchProductsBySupplierName(supplierName, search);
+        }
         return productService.getProductsBySupplierName(supplierName);
     }
 
@@ -52,11 +69,13 @@ public class ProductController {
     }
 
     @GetMapping("/composite/{isComposite}")
-    public List<Product> getProductsByIsComposite(@PathVariable Boolean isComposite) {
+    public List<Product> getProductsByIsComposite(@PathVariable Boolean isComposite, @RequestParam(required = false) String search) {
+            if (search != null && !search.isEmpty()) {
+                return productService.searchProductsByIsComposite(isComposite, search);
+            }
         return productService.getProductsByIsComposite(isComposite);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
