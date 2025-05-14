@@ -56,7 +56,6 @@ public class ProductController {
         return productService.getProductsByIsComposite(isComposite);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
