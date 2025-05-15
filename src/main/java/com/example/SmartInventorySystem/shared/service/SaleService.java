@@ -101,9 +101,7 @@ public class SaleService {
                             }
                         }
 
-                        if (!canProcess) {
-                            continue;
-                        }
+                        if (!canProcess) continue;
                     } else {
                         // Process standard product by checking batch stock
                         Optional<BatchArrivalItem> batchItemOpt = batchArrivalItemRepository.findByProductAndExpiryDate(product, productDTO.getExpirationDate());
@@ -123,17 +121,8 @@ public class SaleService {
                             continue;
                         }
                     }
-
                     // Calculate Total Amount
                     totalAmount = totalAmount.add(product.getPrice().multiply(productDTO.getQuantity()));
-
-                    // Create a new SalesItem
-                    SalesItem salesItem = new SalesItem();
-                    salesItem.setSalesTransaction(salesTransaction);
-                    salesItem.setProduct(product);
-                    salesItem.setQuantity(productDTO.getQuantity());
-                    salesItem.setExpiryDate(productDTO.getExpirationDate());
-                    salesItemRepository.save(salesItem);
 
                     responseMessage.append("Processed sale for product: ").append(product.getProductName()).append("\n");
                 } catch (Exception e) {

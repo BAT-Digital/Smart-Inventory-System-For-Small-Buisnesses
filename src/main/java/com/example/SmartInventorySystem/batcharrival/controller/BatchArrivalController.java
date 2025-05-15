@@ -25,6 +25,15 @@ public class BatchArrivalController {
         return batchArrivalService.getAllBatchArrivals();
     }
 
+    @GetMapping("/search")
+    public List<BatchArrival> getAllBatchArrivalsSearch(
+            @RequestParam(required = false) String search) {
+        if (search != null && !search.isEmpty()) {
+            return batchArrivalService.searchBatchArrivals(search);
+        }
+        return batchArrivalService.getAllBatchArrivals();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<BatchArrival> getBatchArrivalById(@PathVariable Long id) {
         Optional<BatchArrival> batchArrival = batchArrivalService.getBatchArrivalById(id);
@@ -43,7 +52,7 @@ public class BatchArrivalController {
         return updatedBatchArrival != null ? ResponseEntity.ok(updatedBatchArrival) : ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBatchArrival(@PathVariable Long id) {
         batchArrivalService.deleteBatchArrival(id);

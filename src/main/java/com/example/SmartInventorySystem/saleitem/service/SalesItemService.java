@@ -77,5 +77,11 @@ public class SalesItemService {
         salesItemRepository.deleteById(id);
     }
 
+    public void deleteSalesItems(List<Long> ids) {
+        for (Long id : ids) {
+            salesItemRepository.deleteById(id);
+        }
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.example.SmartInventorySystem.product.service;
 
+import com.example.SmartInventorySystem.batcharrival.entity.BatchArrival;
 import com.example.SmartInventorySystem.category.repository.CategoryRepository;
 import com.example.SmartInventorySystem.product.entity.Product;
 import com.example.SmartInventorySystem.product.repository.ProductRepository;
@@ -67,16 +68,33 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    public List<Product> searchAllProducts(String searchTerm) {
+        return productRepository.search(
+                searchTerm.toLowerCase() + "%");
+    }
+
     public List<Product> getProductsByIsComposite(Boolean isComposite) {
         return productRepository.findByIsComposite(isComposite);
+    }
+
+    public List<Product> searchProductsByIsComposite(Boolean isComposite, String searchTerm) {
+        return productRepository.searchByComposite(isComposite, searchTerm.toLowerCase() + "%");
     }
 
     public List<Product> getProductsByCategoryName(String categoryName) {
         return productRepository.findByCategory_Name(categoryName);
     }
 
+    public List<Product> searchProductsByCategoryName(String categoryName, String searchTerm) {
+        return productRepository.findByCategoryNameSearch(categoryName, searchTerm);
+    }
+
     public List<Product> getProductsBySupplierName(String supplierName) {
         return productRepository.findBySupplier_Name(supplierName);
+    }
+
+    public List<Product> searchProductsBySupplierName(String supplierName, String searchTerm) {
+        return productRepository.findBySupplierNameSearch(supplierName, searchTerm);
     }
 
     public Optional<Product> getProductById(Long productId) {
