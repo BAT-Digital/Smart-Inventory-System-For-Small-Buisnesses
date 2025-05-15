@@ -28,14 +28,16 @@ public class SaleService {
     private final BatchArrivalItemRepository batchArrivalItemRepository;
     private final SalesTransactionRepository salesTransactionRepository;
     private final SalesItemRepository salesItemRepository;
+    private final  NotificationService notificationService;
 
-    public SaleService(ProductRepository productRepository, ProductRecipeRepository productRecipeRepository, ProductInUseRepository productInUseRepository, BatchArrivalItemRepository batchArrivalItemRepository, SalesTransactionRepository salesTransactionRepository, SalesItemRepository salesItemRepository) {
+    public SaleService(ProductRepository productRepository, ProductRecipeRepository productRecipeRepository, ProductInUseRepository productInUseRepository, BatchArrivalItemRepository batchArrivalItemRepository, SalesTransactionRepository salesTransactionRepository, SalesItemRepository salesItemRepository, NotificationService notificationService) {
         this.productRepository = productRepository;
         this.productRecipeRepository = productRecipeRepository;
         this.productInUseRepository = productInUseRepository;
         this.batchArrivalItemRepository = batchArrivalItemRepository;
         this.salesTransactionRepository = salesTransactionRepository;
         this.salesItemRepository = salesItemRepository;
+        this.notificationService = notificationService;
     }
 
     public SalesTransaction createNewCheck(String credentials) {
@@ -112,11 +114,14 @@ public class SaleService {
                             responseMessage.append("Not enough stock for product: ").append(product.getProductName()).append("\n");
                             continue;
                         }
+                        if (batchItem.getQuantityRemaining().compareTo(batchItem.getProduct().getThreshold()) < 0) notificationService.sendLowStockNotification(product.getProductName(), batchItem.getQuantityRemaining().intValue(), batchItem.getProduct().getThreshold());
                     }
+
                     // Calculate Total Amount
                     totalAmount = totalAmount.add(product.getPrice().multiply(productDTO.getQuantity()));
 
                     responseMessage.append("Processed sale for product: ").append(product.getProductName()).append("\n");
+
                 } catch (Exception e) {
                     responseMessage.append("Error processing product ").append(productDTO.getBarcode()).append(": ").append(e.getMessage()).append("\n");
                 }

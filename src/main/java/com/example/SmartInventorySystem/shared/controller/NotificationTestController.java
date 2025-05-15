@@ -25,7 +25,7 @@ public class NotificationTestController {
     public ResponseEntity<String> testAllNotifications() {
         try {
             // Test low stock notification
-            notificationService.sendLowStockNotification("Test Product", 5, 10);
+            notificationService.sendLowStockNotification("Test Product", 5, BigDecimal.valueOf(10));
             log.info("Sent low stock notification");
 
             // Test expiration notification
@@ -36,10 +36,6 @@ public class NotificationTestController {
             // Test stock adjustment notification
             notificationService.sendStockAdjustmentNotification("Test Product", 100, "New stock arrival");
             log.info("Sent stock adjustment notification");
-
-            // Test sale notification (this will automatically trigger high-value notification if amount > 1000)
-            notificationService.sendSaleCompletedNotification("SALE-001", new BigDecimal("1500.00"), 5);
-            log.info("Sent sale notification (including high-value notification)");
 
             // Test system notification
             notificationService.sendSystemNotification("System test notification", NotificationPriority.NORMAL);
@@ -55,7 +51,7 @@ public class NotificationTestController {
     @PostMapping("/low-stock")
     public ResponseEntity<String> testLowStock() {
         try {
-            notificationService.sendLowStockNotification("Test Product", 5, 10);
+            notificationService.sendLowStockNotification("Test Product", 5, BigDecimal.valueOf(10));
             return ResponseEntity.ok("Low stock notification sent!");
         } catch (Exception e) {
             log.error("Error sending low stock notification", e);
@@ -75,13 +71,13 @@ public class NotificationTestController {
         }
     }
 
-    @PostMapping("/sale")
-    public ResponseEntity<String> testSale() {
+    @PostMapping("/stock-adjustment")
+    public ResponseEntity<String> testStockAdjustment() {
         try {
-            notificationService.sendSaleCompletedNotification("SALE-001", new BigDecimal("1500.00"), 5);
-            return ResponseEntity.ok("Sale notification sent (including high-value notification)!");
+            notificationService.sendStockAdjustmentNotification("Test Product", 100, "New stock arrival");
+            return ResponseEntity.ok("Stock adjustment notification sent!");
         } catch (Exception e) {
-            log.error("Error sending sale notification", e);
+            log.error("Error sending stock adjustment notification", e);
             return ResponseEntity.internalServerError().body("Error sending notification: " + e.getMessage());
         }
     }
