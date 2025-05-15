@@ -2,19 +2,17 @@ package com.example.SmartInventorySystem.shared.service;
 
 import com.example.SmartInventorySystem.batcharrivalitem.entity.BatchArrivalItem;
 import com.example.SmartInventorySystem.batcharrivalitem.repository.BatchArrivalItemRepository;
+import com.example.SmartInventorySystem.product.entity.Product;
+import com.example.SmartInventorySystem.product.repository.ProductRepository;
 import com.example.SmartInventorySystem.productinuse.entity.ProductInUse;
+import com.example.SmartInventorySystem.productinuse.repository.ProductInUseRepository;
 import com.example.SmartInventorySystem.productrecipe.entity.ProductRecipe;
 import com.example.SmartInventorySystem.productrecipe.repository.ProductRecipeRepository;
 import com.example.SmartInventorySystem.saleitem.entity.SalesItem;
+import com.example.SmartInventorySystem.saleitem.repository.SalesItemRepository;
 import com.example.SmartInventorySystem.salestransaction.entity.SalesTransaction;
 import com.example.SmartInventorySystem.salestransaction.repository.SalesTransactionRepository;
 import com.example.SmartInventorySystem.shared.dto.ProductRequestDTO;
-import com.example.SmartInventorySystem.product.entity.Product;
-import com.example.SmartInventorySystem.product.repository.ProductRepository;
-import com.example.SmartInventorySystem.productinuse.repository.ProductInUseRepository;
-
-import com.example.SmartInventorySystem.saleitem.repository.SalesItemRepository;
-
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -31,12 +29,7 @@ public class SaleService {
     private final SalesTransactionRepository salesTransactionRepository;
     private final SalesItemRepository salesItemRepository;
 
-    public SaleService(ProductRepository productRepository,
-                       ProductRecipeRepository productRecipeRepository,
-                       ProductInUseRepository productInUseRepository,
-                       BatchArrivalItemRepository batchArrivalItemRepository,
-                       SalesTransactionRepository salesTransactionRepository,
-                       SalesItemRepository salesItemRepository) {
+    public SaleService(ProductRepository productRepository, ProductRecipeRepository productRecipeRepository, ProductInUseRepository productInUseRepository, BatchArrivalItemRepository batchArrivalItemRepository, SalesTransactionRepository salesTransactionRepository, SalesItemRepository salesItemRepository) {
         this.productRepository = productRepository;
         this.productRecipeRepository = productRecipeRepository;
         this.productInUseRepository = productInUseRepository;
@@ -57,8 +50,7 @@ public class SaleService {
     @Transactional
     public String processSellTransaction(Long transactionId, List<ProductRequestDTO> productRequestDTOS) {
         StringBuilder responseMessage = new StringBuilder();
-        SalesTransaction salesTransaction = salesTransactionRepository.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("SalesTransaction not found with ID: " + transactionId));
+        SalesTransaction salesTransaction = salesTransactionRepository.findById(transactionId).orElseThrow(() -> new RuntimeException("SalesTransaction not found with ID: " + transactionId));
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         try {
@@ -143,8 +135,7 @@ public class SaleService {
 
     @Transactional
     public String cancelCheck(Long transactionId) {
-        SalesTransaction salesTransaction = salesTransactionRepository.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("SalesTransaction not found with ID: " + transactionId));
+        SalesTransaction salesTransaction = salesTransactionRepository.findById(transactionId).orElseThrow(() -> new RuntimeException("SalesTransaction not found with ID: " + transactionId));
 
         // Delete associated sales items
         List<SalesItem> salesItems = salesItemRepository.findBySalesTransaction(salesTransaction);
