@@ -63,11 +63,46 @@ public class BatchArrivalItemService {
                 if (productOpt.isEmpty()) {
                     responseMessage.append("Product not found with ID: ").append(itemDTO.getProductId()).append(". ");
                 }
-                responseMessage.append("\n");
+                return responseMessage.toString();
             }
         }
 
         batchArrivalItemRepository.saveAll(batchArrivalItems);
+        return responseMessage.toString();
+    }
+
+    @Transactional
+    public String createBatchArrivalItem(BatchArrivalItemDTO batchArrivalItemDTO) {
+        StringBuilder responseMessage = new StringBuilder();
+        Optional<BatchArrival> batchArrivalOpt = batchArrivalRepository.findById(batchArrivalItemDTO.getBatchArrivalId());
+        Optional<Product> productOpt = productRepository.findById(batchArrivalItemDTO.getProductId());
+
+        BatchArrivalItem batchArrivalItem = new BatchArrivalItem();
+
+        if (batchArrivalOpt.isPresent() && productOpt.isPresent()) {
+            BatchArrival batchArrival = batchArrivalOpt.get();
+            Product product = productOpt.get();
+
+            batchArrivalItem.setBatchArrival(batchArrival);
+            batchArrivalItem.setProduct(product);
+            batchArrivalItem.setQuantityReceived(batchArrivalItemDTO.getQuantityReceived());
+            batchArrivalItem.setQuantityRemaining(batchArrivalItemDTO.getQuantityReceived());
+            batchArrivalItem.setExpiryDate(batchArrivalItemDTO.getExpiryDate());
+            batchArrivalItem.setUnitCost(batchArrivalItemDTO.getUnitCost());
+
+            responseMessage.append("Processed BatchArrivalItem for product: ")
+                    .append(product.getProductName())
+                    .append("\n");
+        } else {
+            responseMessage.append("Failed to process BatchArrivalItem: ");
+            if (batchArrivalOpt.isEmpty()) {
+                responseMessage.append("BatchArrival not found with ID: ").append(batchArrivalItemDTO.getBatchArrivalId()).append(". ");
+            }
+            if (productOpt.isEmpty()) {
+                responseMessage.append("Product not found with ID: ").append(batchArrivalItemDTO.getProductId()).append(". ");
+            }
+            return responseMessage.toString();
+        }
         return responseMessage.toString();
     }
 
