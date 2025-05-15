@@ -35,40 +35,47 @@ public class BatchArrivalItemService {
         StringBuilder responseMessage = new StringBuilder();
         List<BatchArrivalItem> batchArrivalItems = new ArrayList<>();
 
-        for (BatchArrivalItemDTO itemDTO : batchArrivalItemDTOs) {
-            Optional<BatchArrival> batchArrivalOpt = batchArrivalRepository.findById(itemDTO.getBatchArrivalId());
-            Optional<Product> productOpt = productRepository.findById(itemDTO.getProductId());
+        try {
+            for (BatchArrivalItemDTO itemDTO : batchArrivalItemDTOs) {
+                Optional<BatchArrival> batchArrivalOpt = batchArrivalRepository.findById(itemDTO.getBatchArrivalId());
+                Optional<Product> productOpt = productRepository.findById(itemDTO.getProductId());
 
-            if (batchArrivalOpt.isPresent() && productOpt.isPresent()) {
-                BatchArrival batchArrival = batchArrivalOpt.get();
-                Product product = productOpt.get();
+                if (batchArrivalOpt.isPresent() && productOpt.isPresent()) {
+                    BatchArrival batchArrival = batchArrivalOpt.get();
+                    Product product = productOpt.get();
 
-                BatchArrivalItem batchArrivalItem = new BatchArrivalItem();
-                batchArrivalItem.setBatchArrival(batchArrival);
-                batchArrivalItem.setProduct(product);
-                batchArrivalItem.setQuantityReceived(itemDTO.getQuantityReceived());
-                batchArrivalItem.setQuantityRemaining(itemDTO.getQuantityReceived());
-                batchArrivalItem.setExpiryDate(itemDTO.getExpiryDate());
-                batchArrivalItem.setUnitCost(itemDTO.getUnitCost());
-                batchArrivalItems.add(batchArrivalItem);
+                    BatchArrivalItem batchArrivalItem = new BatchArrivalItem();
+                    batchArrivalItem.setBatchArrival(batchArrival);
+                    batchArrivalItem.setProduct(product);
+                    batchArrivalItem.setQuantityReceived(itemDTO.getQuantityReceived());
+                    batchArrivalItem.setQuantityRemaining(itemDTO.getQuantityReceived());
+                    batchArrivalItem.setExpiryDate(itemDTO.getExpiryDate());
+                    batchArrivalItem.setUnitCost(itemDTO.getUnitCost());
+                    batchArrivalItems.add(batchArrivalItem);
 
-                responseMessage.append("Processed BatchArrivalItem for product: ")
-                        .append(product.getProductName())
-                        .append("\n");
-            } else {
-                responseMessage.append("Failed to process BatchArrivalItem: ");
-                if (batchArrivalOpt.isEmpty()) {
-                    responseMessage.append("BatchArrival not found with ID: ").append(itemDTO.getBatchArrivalId()).append(". ");
+                    responseMessage.append("Processed BatchArrivalItem for product: ")
+                            .append(product.getProductName())
+                            .append("\n");
+                } else {
+                    responseMessage.append("Failed to process BatchArrivalItem: ");
+                    if (batchArrivalOpt.isEmpty()) {
+                        responseMessage.append("BatchArrival not found with ID: ").append(itemDTO.getBatchArrivalId()).append(". ");
+                    }
+                    if (productOpt.isEmpty()) {
+                        responseMessage.append("Product not found with ID: ").append(itemDTO.getProductId()).append(". ");
+                    }
+                    responseMessage.append("\n");
                 }
-                if (productOpt.isEmpty()) {
-                    responseMessage.append("Product not found with ID: ").append(itemDTO.getProductId()).append(". ");
-                }
-                responseMessage.append("\n");
             }
-        }
 
-        batchArrivalItemRepository.saveAll(batchArrivalItems);
-        return responseMessage.toString();
+            if (!batchArrivalItems.isEmpty()) {
+                batchArrivalItemRepository.saveAll(batchArrivalItems);
+            }
+            
+            return responseMessage.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Error processing batch arrival items: " + e.getMessage(), e);
+        }
     }
 
     public List<BatchArrivalItem> getBatchArrivalItemsByArrivalId(Long arrivalId) {

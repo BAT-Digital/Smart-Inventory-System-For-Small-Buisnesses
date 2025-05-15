@@ -36,17 +36,7 @@ public class ProductService {
         }
 
         // Create new product and map fields from DTO
-        Product product = new Product();
-        product.setProductName(productRequestDTO.getProductName());
-        product.setBarcode(productRequestDTO.getBarcode());
-        product.setIsPerishable(productRequestDTO.getIsPerishable());
-        // Set composite to false (or map from DTO if available)
-        product.setIsComposite(productRequestDTO.getIsComposite());
-        product.setIsComposite(productRequestDTO.getIsComposite());
-        product.setUnitOfMeasure(productRequestDTO.getUnitOfMeasure());
-        product.setDescription(productRequestDTO.getDescription());
-        product.setPrice(productRequestDTO.getPrice());
-        product.setVolume(productRequestDTO.getVolume());
+        Product product = getProduct(productRequestDTO);
 
         // Fetch and set Category (if exists)
         categoryRepository.findById(productRequestDTO.getCategoryId())
@@ -58,6 +48,20 @@ public class ProductService {
         // Save the new product
         productRepository.save(product);
         return product.getProductId().toString();
+    }
+
+    private static Product getProduct(IncomingBatchProductRequestDTO productRequestDTO) {
+        Product product = new Product();
+        product.setProductName(productRequestDTO.getProductName());
+        product.setBarcode(productRequestDTO.getBarcode());
+        product.setIsPerishable(productRequestDTO.getIsPerishable());
+        product.setIsComposite(productRequestDTO.getIsComposite());
+        product.setIsComposite(productRequestDTO.getIsComposite());
+        product.setUnitOfMeasure(productRequestDTO.getUnitOfMeasure());
+        product.setDescription(productRequestDTO.getDescription());
+        product.setPrice(productRequestDTO.getPrice());
+        product.setVolume(productRequestDTO.getVolume());
+        return product;
     }
 
     public List<Product> getAllProducts() {
