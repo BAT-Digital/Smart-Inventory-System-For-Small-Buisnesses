@@ -1,6 +1,8 @@
 package com.example.SmartInventorySystem.writeoff.controller;
 
 
+import com.example.SmartInventorySystem.product.entity.Product;
+import com.example.SmartInventorySystem.writeoff.dto.WriteOffDTO;
 import com.example.SmartInventorySystem.writeoff.entity.WriteOff;
 import com.example.SmartInventorySystem.writeoff.service.WriteOffService;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,11 @@ public class WriteOffController {
     }
 
     @GetMapping
-    public List<WriteOff> getAllWriteOffs() {
+    public List<WriteOff> getAllWriteOffs(
+            @RequestParam(required = false) String search) {
+        if (search != null && !search.isEmpty()) {
+            return writeOffService.searchAllWriteOffs(search);
+        }
         return writeOffService.getAllWriteOffs();
     }
 
@@ -34,6 +40,11 @@ public class WriteOffController {
     @PostMapping
     public WriteOff createWriteOff(@RequestBody WriteOff writeOff) {
         return writeOffService.createWriteOff(writeOff);
+    }
+
+    @PostMapping("/by-dto")
+    public String createWriteOffByDTO(@RequestBody WriteOffDTO writeOffDto) {
+        return writeOffService.createWriteOffByDTO(writeOffDto);
     }
 
     @PutMapping("/{id}")
