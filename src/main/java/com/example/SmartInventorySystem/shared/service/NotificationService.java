@@ -105,6 +105,24 @@ public class NotificationService {
 
         publishNotification("system/events", payload);
     }
+    // System AI Notifications
+    public void sendAICompletionNotification(String message, NotificationPriority priority) {
+        NotificationType type = switch(priority) {
+            case URGENT, HIGH -> NotificationType.SYSTEM_ERROR;
+            case NORMAL -> NotificationType.SYSTEM_WARNING;
+            case LOW -> NotificationType.SYSTEM_INFO;
+        };
+
+        NotificationPayload payload = NotificationPayload.builder()
+                .type(type)
+                .message(message)
+                .category(NotificationCategory.SYSTEM)
+                .priority(priority)
+                .addMetadata("timestamp", LocalDateTime.now().toString())
+                .build();
+
+        publishNotification("system/events/ai_analysis", payload);
+    }
 
 
 } 
