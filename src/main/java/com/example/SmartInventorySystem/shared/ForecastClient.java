@@ -1,6 +1,8 @@
 package com.example.SmartInventorySystem.shared;
 
 import com.example.SmartInventorySystem.shared.dto.SaleRecord;
+import com.example.SmartInventorySystem.shared.model.NotificationTypes;
+import com.example.SmartInventorySystem.shared.service.NotificationService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.core.io.ByteArrayResource;
@@ -17,6 +19,12 @@ import java.util.List;
 
 @Component
 public class ForecastClient {
+
+    private  final NotificationService notificationService;
+
+    public ForecastClient(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
     public String sendCsvToForecastAPI(List<SaleRecord> sales) throws Exception {
         // 1. Генерация CSV
@@ -50,7 +58,7 @@ public class ForecastClient {
             String fastApiUrl = "http://host.docker.internal:8000/forecast";  // для Docker контейнеров
 
             ResponseEntity<String> response = restTemplate.postForEntity(fastApiUrl, requestEntity, String.class);
-
+            notificationService.sendAICompletionNotification("Prediction results are ready go check it!", NotificationTypes.NotificationPriority.LOW);
             if (response.getStatusCode() == HttpStatus.OK) {
                 return response.getBody(); // JSON строка
             } else {
