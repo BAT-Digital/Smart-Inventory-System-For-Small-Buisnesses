@@ -13,6 +13,7 @@ public class IncomingBatchProductRequestDTO {
     private String unitOfMeasure;
     private Long supplierId;
     private String description;
+    private BigDecimal threshold;
     private BigDecimal price;
     private BigDecimal volume;
 }

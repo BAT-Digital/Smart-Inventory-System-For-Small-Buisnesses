@@ -31,7 +31,7 @@ public class BatchArrivalController {
         if (search != null && !search.isEmpty()) {
             return batchArrivalService.searchBatchArrivals(search);
         }
-        return batchArrivalService.getAllBatchArrivals();
+        return batchArrivalService.getAllBatchArrivalsByIdDesc();
     }
 
     @GetMapping("/{id}")
