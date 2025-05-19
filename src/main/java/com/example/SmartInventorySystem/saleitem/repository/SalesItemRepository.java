@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface SalesItemRepository extends JpaRepository<SalesItem, Long> {
     @Query("SELECT SUM(si.quantity * bai.unitCost) " +
@@ -66,5 +67,22 @@ public interface SalesItemRepository extends JpaRepository<SalesItem, Long> {
     @Query("DELETE FROM SalesItem si WHERE si.salesTransaction.transactionId = :transactionId")
     void deleteBySalesTransactionId(@Param("transactionId") Long transactionId);
 
+    @Query("SELECT si FROM SalesItem si " +
+            "WHERE si.salesTransaction.transactionId = :transactionId " +
+            "AND si.product.productId = :productId " +
+            "AND si.expiryDate = :expiryDate")
+    Optional<SalesItem> findByTransactionAndProductAndExpiryDate(
+            @Param("transactionId") Long transactionId,
+            @Param("productId") Long productId,
+            @Param("expiryDate") LocalDate expiryDate
+    );
+
+    @Query("SELECT si FROM SalesItem si " +
+            "WHERE si.salesTransaction.transactionId = :transactionId " +
+            "AND si.product.productId = :productId ")
+    Optional<SalesItem> findByTransactionAndProduct(
+            @Param("transactionId") Long transactionId,
+            @Param("productId") Long productId
+    );
 
 }
