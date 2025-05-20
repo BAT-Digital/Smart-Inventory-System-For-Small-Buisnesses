@@ -26,6 +26,9 @@ public class NotificationPayload {
         }
 
         public NotificationPayloadBuilder addMetadata(Map<String, String> metadata) {
+            if (this.metadata == null) {
+                this.metadata = new HashMap<>();
+            }
             this.metadata.putAll(metadata);
             return this;
         }
