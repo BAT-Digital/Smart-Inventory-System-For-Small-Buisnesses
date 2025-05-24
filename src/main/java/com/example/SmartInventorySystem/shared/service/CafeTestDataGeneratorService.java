@@ -27,10 +27,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
-public class TestDataGeneratorService {
+public class CafeTestDataGeneratorService {
 
     private final CategoryRepository categoryRepository;
     private final SupplierRepository supplierRepository;
@@ -49,7 +48,7 @@ public class TestDataGeneratorService {
     private List<Product> products = new ArrayList<>();
     private User adminUser;
 
-    public TestDataGeneratorService(CategoryRepository categoryRepository, 
+    public CafeTestDataGeneratorService(CategoryRepository categoryRepository, 
                                    SupplierRepository supplierRepository,
                                    ProductRepository productRepository, 
                                    UserRepository userRepository,
@@ -68,7 +67,7 @@ public class TestDataGeneratorService {
     }
 
     @Transactional
-    public void generateTestData() {
+    public void generateCafeData() {
         // Clean tables for a fresh test dataset
         cleanup();
         
@@ -148,6 +147,7 @@ public class TestDataGeneratorService {
             supplier.setName(supplierNames[i]);
             supplier.setAddress("123 Supplier St, Coffee Town, CT " + (10000 + i));
             supplier.setContactInfo("Phone: (555) 123-45" + (10 + i) + ", Email: contact@" + supplierNames[i].toLowerCase().replaceAll("[^a-z]", "") + ".com");
+            supplier.setContactInfo(supplier.getContactInfo() + " | " + descriptions[i]);
             suppliers.add(supplierRepository.save(supplier));
         }
     }
@@ -639,276 +639,5 @@ public class TestDataGeneratorService {
             
             batchArrivalItemRepository.save(item);
         }
-    }
-
-    @Transactional
-    public void generateAITestData() {
-        // Clean transaction data
-        salesItemRepository.deleteAll();
-        salesTransactionRepository.deleteAll();
-        
-        // Check for base data, create if none exists
-        if (categoryRepository.count() == 0) {
-            createCafeCategories();
-        } else {
-            categories = categoryRepository.findAll();
-        }
-        
-        if (supplierRepository.count() == 0) {
-            createCafeSuppliers();
-        } else {
-            suppliers = supplierRepository.findAll();
-        }
-        
-        if (productRepository.count() == 0) {
-            createCafeProducts();
-        } else {
-            products = productRepository.findAll();
-        }
-        
-        if (userRepository.count() == 0) {
-            createAdminUser();
-        } else {
-            adminUser = userRepository.findAll().get(0);
-        }
-        
-        // Create AI test data - large sales data set with clear seasonal trends and trends
-        
-        LocalDateTime startDate = LocalDateTime.now().minusMonths(12);
-        createPatternedSalesData(startDate);
-        
-        System.out.println("AI test data successfully created!");
-    }
-
-    private void createPatternedSalesData(LocalDateTime startDate) {
-        // Create good data patterns for AI
-        // Select 10 products that will have clear patterns
-        
-        List<Product> selectedProducts = new ArrayList<>();
-        if (products.size() >= 10) {
-            // Take 10 random products
-            Random random = new Random();
-            Set<Integer> selectedIndexes = new HashSet<>();
-            while (selectedIndexes.size() < 10) {
-                selectedIndexes.add(random.nextInt(products.size()));
-            }
-            
-            for (Integer index : selectedIndexes) {
-                selectedProducts.add(products.get(index));
-            }
-        } else {
-            // If we have less than 10 products, take all we have
-            selectedProducts.addAll(products);
-        }
-        
-        // Products with seasonal sales
-        createSeasonalSalesPattern(selectedProducts.get(0), startDate, "summer"); // Summer product
-        createSeasonalSalesPattern(selectedProducts.get(1), startDate, "winter"); // Winter product
-        
-        // Products with weekly peaks (weekends)
-        createWeeklyPattern(selectedProducts.get(2), startDate, "weekend"); // More sales on weekends
-        createWeeklyPattern(selectedProducts.get(3), startDate, "weekday"); // More sales on weekdays
-        
-        // Products with monthly peaks (start/end of month)
-        createMonthlyPattern(selectedProducts.get(4), startDate, "start"); // More in the beginning of the month
-        createMonthlyPattern(selectedProducts.get(5), startDate, "end"); // More in the end of the month
-        
-        // Products with clear trends (growth/decline)
-        createTrendPattern(selectedProducts.get(6), startDate, "growing"); // Growing sales
-        createTrendPattern(selectedProducts.get(7), startDate, "declining"); // Declining sales
-        
-        // Products with stable sales
-        createStablePattern(selectedProducts.get(8), startDate, "high"); // Stable high
-        createStablePattern(selectedProducts.get(9), startDate, "low"); // Stable low
-    }
-
-    private void createSeasonalSalesPattern(Product product, LocalDateTime startDate, String season) {
-        LocalDateTime current = startDate;
-        LocalDateTime endDate = LocalDateTime.now();
-        
-        while (current.isBefore(endDate)) {
-            int month = current.getMonthValue();
-            
-            // Determine "seasonality" of sales
-            double multiplier;
-            if (season.equals("summer")) {
-                // Summer product: peak in June-August
-                if (month >= 6 && month <= 8) {
-                    multiplier = 5.0; // 5x more in summer
-                } else if (month >= 4 && month <= 9) {
-                    multiplier = 2.0; // Spring and fall - average season
-                } else {
-                    multiplier = 1.0; // Winter - low season
-                }
-            } else { // winter
-                // Winter product: peak in December-February
-                if (month == 12 || month <= 2) {
-                    multiplier = 5.0; // 5x more in winter
-                } else if (month >= 10 || month <= 4) {
-                    multiplier = 2.0; // Fall and spring - average season
-                } else {
-                    multiplier = 1.0; // Summer - low season
-                }
-            }
-            
-            // Create sales with seasonality
-            createSalesForDay(product, current, (int)(1 + random.nextInt(5) * multiplier));
-            
-            // Move to next day
-            current = current.plusDays(1);
-        }
-    }
-
-    private void createWeeklyPattern(Product product, LocalDateTime startDate, String pattern) {
-        LocalDateTime current = startDate;
-        LocalDateTime endDate = LocalDateTime.now();
-        
-        while (current.isBefore(endDate)) {
-            int dayOfWeek = current.getDayOfWeek().getValue(); // 1 (Monday) - 7 (Sunday)
-            
-            // Determine weekly sales pattern
-            double multiplier;
-            if (pattern.equals("weekend")) {
-                // More sales on weekends
-                if (dayOfWeek >= 6) { // Saturday and Sunday
-                    multiplier = 3.0;
-                } else if (dayOfWeek == 5) { // Friday
-                    multiplier = 2.0;
-                } else {
-                    multiplier = 1.0;
-                }
-            } else { // weekday
-                // More sales on weekdays
-                if (dayOfWeek <= 5) { // Monday-Friday
-                    multiplier = 2.5;
-                } else {
-                    multiplier = 1.0;
-                }
-            }
-            
-            // Create sales with day of the week
-            createSalesForDay(product, current, (int)(1 + random.nextInt(5) * multiplier));
-            
-            // Move to next day
-            current = current.plusDays(1);
-        }
-    }
-
-    private void createMonthlyPattern(Product product, LocalDateTime startDate, String pattern) {
-        LocalDateTime current = startDate;
-        LocalDateTime endDate = LocalDateTime.now();
-        
-        while (current.isBefore(endDate)) {
-            int dayOfMonth = current.getDayOfMonth();
-            int lastDayOfMonth = current.getMonth().length(current.toLocalDate().isLeapYear());
-            
-            // Determine monthly sales pattern
-            double multiplier;
-            if (pattern.equals("start")) {
-                // More sales in the beginning of the month
-                if (dayOfMonth <= 5) {
-                    multiplier = 4.0;
-                } else if (dayOfMonth <= 10) {
-                    multiplier = 2.0;
-                } else {
-                    multiplier = 1.0;
-                }
-            } else { // end
-                // More sales in the end of the month
-                if (dayOfMonth >= lastDayOfMonth - 4) {
-                    multiplier = 4.0;
-                } else if (dayOfMonth >= lastDayOfMonth - 9) {
-                    multiplier = 2.0;
-                } else {
-                    multiplier = 1.0;
-                }
-            }
-            
-            // Create sales with day of the month
-            createSalesForDay(product, current, (int)(1 + random.nextInt(4) * multiplier));
-            
-            // Move to next day
-            current = current.plusDays(1);
-        }
-    }
-
-    private void createTrendPattern(Product product, LocalDateTime startDate, String trend) {
-        LocalDateTime current = startDate;
-        LocalDateTime endDate = LocalDateTime.now();
-        
-        // Total days for trend calculation
-        long totalDays = ChronoUnit.DAYS.between(startDate, endDate);
-        long currentDay = 0;
-        
-        while (current.isBefore(endDate)) {
-            // Calculate progress (0 to 1) for current day
-            double progress = (double) currentDay / totalDays;
-            
-            // Determine multiplier based on trend
-            double multiplier;
-            if (trend.equals("growing")) {
-                // Growing sales: 1 to 5
-                multiplier = 1.0 + 4.0 * progress;
-            } else { // declining
-                // Declining sales: 5 to 1
-                multiplier = 5.0 - 4.0 * progress;
-            }
-            
-            // Create sales with trend
-            createSalesForDay(product, current, (int)(1 + random.nextInt(3) * multiplier));
-            
-            // Move to next day
-            current = current.plusDays(1);
-            currentDay++;
-        }
-    }
-
-    private void createStablePattern(Product product, LocalDateTime startDate, String level) {
-        LocalDateTime current = startDate;
-        LocalDateTime endDate = LocalDateTime.now();
-        
-        // Base multiplier based on sales level
-        double baseMultiplier = level.equals("high") ? 5.0 : 1.0;
-        
-        while (current.isBefore(endDate)) {
-            // Add slight randomness for realism
-            double randomFactor = 0.8 + (random.nextDouble() * 0.4); // 0.8 - 1.2
-            
-            // Create sales with level and randomness
-            createSalesForDay(product, current, (int)(1 + random.nextInt(3) * baseMultiplier * randomFactor));
-            
-            // Move to next day
-            current = current.plusDays(1);
-        }
-    }
-
-    private void createSalesForDay(Product product, LocalDateTime date, int quantity) {
-        if (quantity <= 0) return;
-        
-        SalesTransaction transaction = new SalesTransaction();
-        transaction.setTransactionDate(date);
-        transaction.setTotalAmount(BigDecimal.ZERO);
-        
-        SalesTransaction savedTransaction = salesTransactionRepository.save(transaction);
-        
-        SalesItem item = new SalesItem();
-        item.setSalesTransaction(savedTransaction);
-        item.setProduct(product);
-        
-        BigDecimal quantityBD = BigDecimal.valueOf(quantity).setScale(2, RoundingMode.HALF_UP);
-        item.setQuantity(quantityBD);
-        
-        if (product.getIsPerishable()) {
-            LocalDate expiryDate = date.toLocalDate().plusDays(random.nextInt(30) + 1);
-            item.setExpiryDate(expiryDate);
-        }
-        
-        salesItemRepository.save(item);
-        
-        // Calculate and update total
-        BigDecimal totalAmount = product.getPrice().multiply(quantityBD)
-                .setScale(2, RoundingMode.HALF_UP);
-        savedTransaction.setTotalAmount(totalAmount);
-        salesTransactionRepository.save(savedTransaction);
     }
 } 
