@@ -32,6 +32,10 @@ public class BatchArrivalService {
         return batchArrivalRepository.findAll();
     }
 
+    public List<BatchArrival> getAllBatchArrivalsByIdDesc() {
+        return batchArrivalRepository.findAllByOrderByArrivalIdDesc();
+    }
+
     public List<BatchArrival> searchBatchArrivals(String searchTerm) {
         return batchArrivalRepository.search(
                 searchTerm.toLowerCase() + "%");

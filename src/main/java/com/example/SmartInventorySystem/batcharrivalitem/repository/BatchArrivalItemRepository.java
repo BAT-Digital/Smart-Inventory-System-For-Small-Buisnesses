@@ -14,6 +14,8 @@ import java.util.Optional;
 
 public interface BatchArrivalItemRepository extends JpaRepository<BatchArrivalItem, Long> {
     Optional<BatchArrivalItem> findByProductAndExpiryDate(Product product, LocalDate expiryDate);
+    List<BatchArrivalItem> findByProductAndExpiryDateIsNull(Product product);
+    List<BatchArrivalItem> findByProductAndExpiryDateIsNullOrderByBatchItemIdAsc(Product product);
 
     List<BatchArrivalItem> findByProduct_Barcode(String barcode);
     List<BatchArrivalItem> findByProduct_BarcodeAndExpiryDate(String barcode, LocalDate expiryDate);

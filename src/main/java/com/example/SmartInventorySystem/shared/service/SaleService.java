@@ -52,88 +52,129 @@ public class SaleService {
     @Transactional
     public String processSellTransaction(Long transactionId, List<ProductRequestDTO> productRequestDTOS) {
         StringBuilder responseMessage = new StringBuilder();
-        SalesTransaction salesTransaction = salesTransactionRepository.findById(transactionId).orElseThrow(() -> new RuntimeException("SalesTransaction not found with ID: " + transactionId));
+        SalesTransaction salesTransaction = salesTransactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("SalesTransaction not found with ID: " + transactionId));
         BigDecimal totalAmount = BigDecimal.ZERO;
 
-        try {
-            for (ProductRequestDTO productDTO : productRequestDTOS) {
-                try {
-                    Optional<Product> existingProduct = productRepository.findByBarcode(productDTO.getBarcode());
+        // First validate everything can be processed
+        for (ProductRequestDTO productDTO : productRequestDTOS) {
+            Optional<Product> existingProduct = productRepository.findByBarcode(productDTO.getBarcode());
+            if (existingProduct.isEmpty()) {
+                return ("Product not found for barcode: " + productDTO.getBarcode());
+            }
 
-                    if (existingProduct.isEmpty()) {
-                        responseMessage.append("Product not found for barcode: ").append(productDTO.getBarcode()).append("\n");
-                        continue;
+            Product product = existingProduct.get();
+
+            if (product.getIsComposite()) {
+                List<ProductRecipe> ingredients = productRecipeRepository.findByFinalProduct(product);
+                for (ProductRecipe ingredientRecipe : ingredients) {
+                    Product ingredient = ingredientRecipe.getIngredient();
+                    ProductInUse ingredientStock = productInUseRepository.findByProduct(ingredient)
+                            .orElseThrow(() -> new RuntimeException("Ingredient not found in stock: " + ingredient.getProductName()));
+
+                    BigDecimal requiredVolume = ingredientRecipe.getQuantityRequired().multiply(productDTO.getQuantity());
+                    if (ingredientStock.getVolumeRemaining().compareTo(requiredVolume) < 0) {
+                        return ("Not enough stock for ingredient: " + ingredient.getProductName());
+                    }
+                }
+            } else {
+                // Handle differently based on whether expiry date is specified
+                if (productDTO.getExpirationDate() != null) {
+                    // Original behavior - exact match by expiry date
+                    BatchArrivalItem batchItem = batchArrivalItemRepository.findByProductAndExpiryDate(product, productDTO.getExpirationDate())
+                            .orElseThrow(() -> new RuntimeException("Batch not found for product: " + product.getProductName()));
+
+                    if (batchItem.getQuantityRemaining().compareTo(productDTO.getQuantity()) < 0) {
+                        return ("Not enough stock for product: " + product.getProductName() +
+                                " in batch expiring on " + productDTO.getExpirationDate());
+                    }
+                } else {
+                    // New behavior - aggregate all batches with null expiry date
+                    List<BatchArrivalItem> batchItems = batchArrivalItemRepository
+                            .findByProductAndExpiryDateIsNull(product);
+
+                    BigDecimal totalAvailable = batchItems.stream()
+                            .map(BatchArrivalItem::getQuantityRemaining)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    if (totalAvailable.compareTo(productDTO.getQuantity()) < 0) {
+                        return ("Not enough stock for product: " + product.getProductName() +
+                                " in non-expiring batches (needed: " + productDTO.getQuantity() +
+                                ", available: " + totalAvailable + ")");
+                    }
+                }
+            }
+        }
+
+        // If we get here, everything is available - now process
+        for (ProductRequestDTO productDTO : productRequestDTOS) {
+            Product product = productRepository.findByBarcode(productDTO.getBarcode()).get();
+
+            if (product.getIsComposite()) {
+                List<ProductRecipe> ingredients = productRecipeRepository.findByFinalProduct(product);
+                for (ProductRecipe ingredientRecipe : ingredients) {
+                    ProductInUse ingredientStock = productInUseRepository.findByProduct(ingredientRecipe.getIngredient()).get();
+                    BigDecimal requiredVolume = ingredientRecipe.getQuantityRequired().multiply(productDTO.getQuantity());
+                    ingredientStock.setVolumeRemaining(ingredientStock.getVolumeRemaining().subtract(requiredVolume));
+                    productInUseRepository.save(ingredientStock);
+                }
+            } else {
+                if (productDTO.getExpirationDate() != null) {
+                    // Original behavior - exact match by expiry date
+                    BatchArrivalItem batchItem = batchArrivalItemRepository.findByProductAndExpiryDate(product, productDTO.getExpirationDate()).get();
+                    batchItem.setQuantityRemaining(batchItem.getQuantityRemaining().subtract(productDTO.getQuantity()));
+                    batchArrivalItemRepository.save(batchItem);
+
+                    if (batchItem.getQuantityRemaining().compareTo(batchItem.getProduct().getThreshold()) < 0) {
+                        notificationService.sendLowStockNotification(
+                                product.getProductName(),
+                                batchItem.getQuantityRemaining().intValue(),
+                                batchItem.getProduct().getThreshold()
+                        );
+                    }
+                } else {
+                    // New behavior - deduct from batches with null expiry date (in order of arrival or ID)
+                    List<BatchArrivalItem> batchItems = batchArrivalItemRepository
+                            .findByProductAndExpiryDateIsNullOrderByBatchItemIdAsc(product);
+
+                    BigDecimal remainingQuantityNeeded = productDTO.getQuantity();
+                    BigDecimal remainingQuantity = BigDecimal.valueOf(0);
+
+                    for (BatchArrivalItem batchItem : batchItems) {
+                        if (remainingQuantityNeeded.compareTo(BigDecimal.ZERO) <= 0) {
+                            break;
+                        }
+
+                        BigDecimal quantityToDeduct = batchItem.getQuantityRemaining().min(remainingQuantityNeeded);
+                        batchItem.setQuantityRemaining(batchItem.getQuantityRemaining().subtract(quantityToDeduct));
+                        batchArrivalItemRepository.save(batchItem);
+
+                        remainingQuantityNeeded = remainingQuantityNeeded.subtract(quantityToDeduct);
                     }
 
-                    Product product = existingProduct.get();
-
-                    if (product.getIsComposite()) {
-                        // Process composite product by checking ingredients
-                        List<ProductRecipe> ingredients = productRecipeRepository.findByFinalProduct(product);
-                        boolean canProcess = true;
-
-                        for (ProductRecipe ingredientRecipe : ingredients) {
-                            Product ingredient = ingredientRecipe.getIngredient();
-                            Optional<ProductInUse> ingredientStockOpt = productInUseRepository.findByProduct(ingredient);
-
-                            if (ingredientStockOpt.isPresent()) {
-                                ProductInUse ingredientStock = ingredientStockOpt.get();
-                                BigDecimal requiredVolume = ingredientRecipe.getQuantityRequired().multiply(productDTO.getQuantity());
-
-                                if (ingredientStock.getVolumeRemaining().compareTo(requiredVolume) >= 0) {
-                                    ingredientStock.setVolumeRemaining(ingredientStock.getVolumeRemaining().subtract(requiredVolume));
-                                    productInUseRepository.save(ingredientStock);
-                                } else {
-                                    responseMessage.append("Not enough stock for ingredient: ").append(ingredient.getProductName()).append("\n");
-                                    canProcess = false;
-                                    break;
-                                }
-                            } else {
-                                responseMessage.append("Ingredient not found in stock: ").append(ingredient.getProductName()).append("\n");
-                                canProcess = false;
-                                break;
-                            }
-                        }
-
-                        if (!canProcess) continue;
-                    } else {
-                        // Process standard product by checking batch stock
-                        Optional<BatchArrivalItem> batchItemOpt = batchArrivalItemRepository.findByProductAndExpiryDate(product, productDTO.getExpirationDate());
-
-                        if (batchItemOpt.isEmpty()) {
-                            responseMessage.append("Batch not found for product: ").append(product.getProductName()).append("\n");
-                            continue;
-                        }
-
-                        BatchArrivalItem batchItem = batchItemOpt.get();
-
-                        if (batchItem.getQuantityRemaining().compareTo(productDTO.getQuantity()) >= 0) {
-                            batchItem.setQuantityRemaining(batchItem.getQuantityRemaining().subtract(productDTO.getQuantity()));
-                            batchArrivalItemRepository.save(batchItem);
-                        } else {
-                            responseMessage.append("Not enough stock for product: ").append(product.getProductName()).append("\n");
-                            continue;
-                        }
-                        if (batchItem.getQuantityRemaining().compareTo(batchItem.getProduct().getThreshold()) < 0) notificationService.sendLowStockNotification(product.getProductName(), batchItem.getQuantityRemaining().intValue(), batchItem.getProduct().getThreshold());
+                    // Check for low stock notification
+                    for (BatchArrivalItem batchItem : batchItems) {
+                        remainingQuantity = remainingQuantity.add(batchItem.getQuantityRemaining());
                     }
 
-                    // Calculate Total Amount
-                    totalAmount = totalAmount.add(product.getPrice().multiply(productDTO.getQuantity()));
-
-                    responseMessage.append("Processed sale for product: ").append(product.getProductName()).append("\n");
-
-                } catch (Exception e) {
-                    responseMessage.append("Error processing product ").append(productDTO.getBarcode()).append(": ").append(e.getMessage()).append("\n");
+                    System.out.println(remainingQuantity);
+                    if (remainingQuantity.compareTo(batchItems.get(0).getProduct().getThreshold()) < 0) {
+                        notificationService.sendLowStockNotification(
+                                product.getProductName(),
+                                remainingQuantity.intValue(),
+                                batchItems.get(0).getProduct().getThreshold()
+                        );
+                    }
                 }
             }
 
-            // Update the sales transaction
-            salesTransaction.setTotalAmount(totalAmount);
-            salesTransaction.setStatus("COMPLETED");
-            salesTransactionRepository.save(salesTransaction);
-        } catch (Exception e) {
-            responseMessage.append("Error processing sale transaction: ").append(e.getMessage()).append("\n");
+            totalAmount = totalAmount.add(product.getPrice().multiply(productDTO.getQuantity()));
+            responseMessage.append("Processed sale for product: ").append(product.getProductName()).append("\n");
         }
+
+        salesTransaction.setTotalAmount(totalAmount);
+        salesTransaction.setStatus("COMPLETED");
+        salesTransactionRepository.save(salesTransaction);
 
         return responseMessage.toString();
     }
