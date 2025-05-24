@@ -1,6 +1,7 @@
 package com.example.SmartInventorySystem.shared.controller;
 
 import com.example.SmartInventorySystem.shared.service.TestDataGeneratorService;
+import com.example.SmartInventorySystem.shared.service.CafeTestDataGeneratorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestDataController {
 
     private final TestDataGeneratorService testDataGeneratorService;
+    private final CafeTestDataGeneratorService cafeTestDataGeneratorService;
 
-    public TestDataController(TestDataGeneratorService testDataGeneratorService) {
+    public TestDataController(TestDataGeneratorService testDataGeneratorService, CafeTestDataGeneratorService cafeTestDataGeneratorService) {
         this.testDataGeneratorService = testDataGeneratorService;
+        this.cafeTestDataGeneratorService = cafeTestDataGeneratorService;
     }
 
     @PostMapping("/generate")
@@ -37,6 +40,16 @@ public class TestDataController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body("Ошибка при генерации тестовых данных для AI: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/generate-cafe-data")
+    public ResponseEntity<String> generateCafeData() {
+        try {
+            cafeTestDataGeneratorService.generateCafeData();
+            return ResponseEntity.ok("Cafe test data successfully generated!");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error generating cafe test data: " + e.getMessage());
         }
     }
 } 
