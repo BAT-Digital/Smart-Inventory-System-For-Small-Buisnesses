@@ -4,7 +4,6 @@ import com.example.SmartInventorySystem.batcharrival.dto.BatchArrivalDTO;
 import com.example.SmartInventorySystem.batcharrival.entity.BatchArrival;
 import com.example.SmartInventorySystem.batcharrival.service.BatchArrivalService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

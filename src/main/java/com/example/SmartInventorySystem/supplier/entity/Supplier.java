@@ -13,12 +13,12 @@ public class Supplier {
     @Column(name = "supplier_id")
     private Long supplierId;
 
-    @Column(name = "name", nullable = false, length = 255)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "address", length = 255)
+    @Column(name = "address")
     private String address;
 
-    @Column(name = "contact_info", length = 255)
+    @Column(name = "contact_info")
     private String contactInfo;
 }

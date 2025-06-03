@@ -3,7 +3,6 @@ package com.example.SmartInventorySystem.user.controller;
 import com.example.SmartInventorySystem.user.entity.User;
 import com.example.SmartInventorySystem.user.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

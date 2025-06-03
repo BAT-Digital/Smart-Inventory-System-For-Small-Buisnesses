@@ -4,7 +4,6 @@ package com.example.SmartInventorySystem.category.service;
 import com.example.SmartInventorySystem.category.dto.CategoryDTO;
 import com.example.SmartInventorySystem.category.entity.Category;
 import com.example.SmartInventorySystem.category.repository.CategoryRepository;
-import com.example.SmartInventorySystem.product.entity.Product;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

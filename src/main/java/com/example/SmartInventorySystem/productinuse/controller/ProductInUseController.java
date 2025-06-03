@@ -1,6 +1,5 @@
 package com.example.SmartInventorySystem.productinuse.controller;
 
-import com.example.SmartInventorySystem.batcharrival.entity.BatchArrival;
 import com.example.SmartInventorySystem.productinuse.service.ProductInUseService;
 import com.example.SmartInventorySystem.productinuse.entity.ProductInUse;
 import com.example.SmartInventorySystem.shared.dto.ProductRequestDTO;

@@ -1,6 +1,5 @@
 package com.example.SmartInventorySystem.productinuse.service;
 
-import com.example.SmartInventorySystem.batcharrival.entity.BatchArrival;
 import com.example.SmartInventorySystem.batcharrivalitem.entity.BatchArrivalItem;
 import com.example.SmartInventorySystem.batcharrivalitem.repository.BatchArrivalItemRepository;
 import com.example.SmartInventorySystem.productinuse.entity.ProductInUse;
@@ -84,7 +83,7 @@ public class ProductInUseService {
             // Find or create ProductInUse entry
             Optional<ProductInUse> optionalProductInUse = productInUseRepository.findByProduct(product);
 
-            BigDecimal newVolumeReceived = BigDecimal.valueOf(0);
+            BigDecimal newVolumeReceived;
 
             ProductInUse productInUse;
             if (optionalProductInUse.isPresent()) {

@@ -1,6 +1,5 @@
 package com.example.SmartInventorySystem.product.service;
 
-import com.example.SmartInventorySystem.batcharrival.entity.BatchArrival;
 import com.example.SmartInventorySystem.category.repository.CategoryRepository;
 import com.example.SmartInventorySystem.product.entity.Product;
 import com.example.SmartInventorySystem.product.repository.ProductRepository;

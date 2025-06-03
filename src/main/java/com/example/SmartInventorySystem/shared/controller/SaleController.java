@@ -33,7 +33,16 @@ public class SaleController {
 
     @PostMapping("/cancel-check/{id}")
     public ResponseEntity<String> cancelCheck(@PathVariable Long id) {
-        String result = saleService.cancelCheck(id);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        try {
+            // Call service method which returns a String
+            String result = saleService.cancelCheck(id);
+
+            // Return HTTP 200 OK with the result string as the body
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            // Return HTTP 400 Bad Request with the error message
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
 }

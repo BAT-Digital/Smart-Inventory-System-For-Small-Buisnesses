@@ -44,7 +44,7 @@ public class ProductRecipeController {
     }
 
     @PostMapping("/process-recipes")
-    public String processProductRecipes(@RequestBody List<ProductRecipeDTO> ProductRecipeDTOS) {
+    public ResponseEntity<?> processProductRecipes(@RequestBody List<ProductRecipeDTO> ProductRecipeDTOS) {
         return productRecipeService.processProductRecipes(ProductRecipeDTOS);
     }
 
