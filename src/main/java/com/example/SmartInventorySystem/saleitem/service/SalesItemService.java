@@ -42,22 +42,42 @@ public class SalesItemService {
     }
 
     public SalesItem createSalesItemByDTO(SalesItemDTO salesItemDTO) {
-        SalesItem salesItem = new SalesItem();
+        Optional<SalesItem> existingItem;
+        if(salesItemDTO.getExpiryDate() == null) {
+            existingItem = salesItemRepository.findByTransactionAndProduct(
+                    salesItemDTO.getTransactionId(),
+                    salesItemDTO.getProductId()
+            );
+        } else {
+            // First try to find an existing item with the same transaction, product, and expiry date
+            existingItem = salesItemRepository.findByTransactionAndProductAndExpiryDate(
+                    salesItemDTO.getTransactionId(),
+                    salesItemDTO.getProductId(),
+                    salesItemDTO.getExpiryDate()
+            );
+        }
 
-        // Fetch the associated SalesTransaction
-        SalesTransaction salesTransaction = salesTransactionRepository.findById(salesItemDTO.getTransactionId())
-                .orElseThrow(() -> new RuntimeException("SalesTransaction not found with ID: " + salesItemDTO.getTransactionId()));
-        salesItem.setSalesTransaction(salesTransaction);
+        if (existingItem.isPresent()) {
+            // If found, increment the quantity
+            SalesItem item = existingItem.get();
+            item.setQuantity(item.getQuantity().add(salesItemDTO.getQuantity())); // Or add 1 if you always want +1
+            return salesItemRepository.save(item);
+        } else {
+            // If not found, create new item
+            SalesItem salesItem = new SalesItem();
 
-        // Fetch the associated Product
-        Product product = productRepository.findById(salesItemDTO.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + salesItemDTO.getProductId()));
-        salesItem.setProduct(product);
+            SalesTransaction salesTransaction = salesTransactionRepository.findById(salesItemDTO.getTransactionId())
+                    .orElseThrow(() -> new RuntimeException("SalesTransaction not found with ID: " + salesItemDTO.getTransactionId()));
+            salesItem.setSalesTransaction(salesTransaction);
 
-        // Set the quantity
-        salesItem.setExpiryDate(salesItemDTO.getExpiryDate());
-        salesItem.setQuantity(salesItemDTO.getQuantity());
-        return salesItemRepository.save(salesItem);
+            Product product = productRepository.findById(salesItemDTO.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found with ID: " + salesItemDTO.getProductId()));
+            salesItem.setProduct(product);
+
+            salesItem.setExpiryDate(salesItemDTO.getExpiryDate());
+            salesItem.setQuantity(salesItemDTO.getQuantity());
+            return salesItemRepository.save(salesItem);
+        }
     }
 
     public SalesItem createSalesItem(SalesItem salesItem) {

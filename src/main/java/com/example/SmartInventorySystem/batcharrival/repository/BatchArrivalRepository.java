@@ -11,6 +11,9 @@ public interface BatchArrivalRepository extends JpaRepository<BatchArrival, Long
     @Query("SELECT b FROM BatchArrival b WHERE " +
             "LOWER(b.supplier.name) LIKE LOWER(concat('%', :searchTerm, '%')) OR " +
             "LOWER(b.notes) LIKE LOWER(concat('%', :searchTerm, '%')) OR " +
-            "LOWER(b.addedBy.username) LIKE LOWER(concat('%', :searchTerm, '%'))")
+            "LOWER(b.addedBy.username) LIKE LOWER(concat('%', :searchTerm, '%'))" +
+            "ORDER BY b.id DESC")
     List<BatchArrival> search(@Param("searchTerm") String searchTerm);
+
+    List<BatchArrival> findAllByOrderByArrivalIdDesc();
 }

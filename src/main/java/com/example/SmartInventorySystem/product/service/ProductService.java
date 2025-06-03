@@ -36,6 +36,7 @@ public class ProductService {
 
         // Create new product and map fields from DTO
         Product product = getProduct(productRequestDTO);
+        product.setThreshold(productRequestDTO.getThreshold());
 
         // Fetch and set Category (if exists)
         categoryRepository.findById(productRequestDTO.getCategoryId())

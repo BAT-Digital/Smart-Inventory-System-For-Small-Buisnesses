@@ -44,7 +44,7 @@ public class Product {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "threshold")
+    @Column(name = "threshold", nullable = true, precision = 10, scale = 2)
     private BigDecimal threshold;
 
     @Column(name = "price", precision = 10, scale = 2)
