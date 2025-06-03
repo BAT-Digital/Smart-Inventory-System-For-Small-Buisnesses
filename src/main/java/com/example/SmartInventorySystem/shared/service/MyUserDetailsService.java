@@ -13,9 +13,11 @@ import java.util.Optional;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
-    private final UserRepository userRepository = null;
+    private final UserRepository userRepository;
 
-    public MyUserDetailsService() {
+
+    public MyUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -25,3 +27,4 @@ public class MyUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(username + " Not Found"));
     }
 }
+

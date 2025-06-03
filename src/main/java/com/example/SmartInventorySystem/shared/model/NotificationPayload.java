@@ -30,7 +30,7 @@ public class NotificationPayload {
         private NotificationCategory category;
         private NotificationPriority priority;
         private LocalDateTime timestamp;
-        private final Map<String, String> metadata = new HashMap<>();
+        private Map<String, String> metadata = new HashMap<>();
 
         public NotificationPayloadBuilder type(NotificationType type) {
             this.type = type;

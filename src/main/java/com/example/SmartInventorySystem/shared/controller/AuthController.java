@@ -54,14 +54,13 @@ public class AuthController {
 
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-            // Assuming your UserDetails is custom and contains username + ID
             MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
 
 
             return ResponseEntity.ok(Map.of(
                     "username", userDetails.getUsername(),
                     "id", userDetails.getUserId(),
-                    "role", userDetails.getRole()// or other identifier
+                    "role", userDetails.getRole()
             ));
 
         } catch (BadCredentialsException e) {
