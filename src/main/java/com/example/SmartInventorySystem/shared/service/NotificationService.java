@@ -32,7 +32,7 @@ public class NotificationService {
             mqttClient.publish(topic, mqttMessage);
             log.info("Published notification to topic: {}, type: {}", topic, payload.getType());
         } catch (Exception e) {
-            log.error("Error publishing notification to topic: " + topic, e);
+            log.error("Error publishing notification to topic: {}", topic, e);
         }
     }
 

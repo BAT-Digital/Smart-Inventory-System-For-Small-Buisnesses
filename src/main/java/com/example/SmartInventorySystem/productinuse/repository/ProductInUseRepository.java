@@ -1,6 +1,5 @@
 package com.example.SmartInventorySystem.productinuse.repository;
 
-import com.example.SmartInventorySystem.batcharrival.entity.BatchArrival;
 import com.example.SmartInventorySystem.product.entity.Product;
 import com.example.SmartInventorySystem.productinuse.entity.ProductInUse;
 import org.springframework.data.jpa.repository.JpaRepository;

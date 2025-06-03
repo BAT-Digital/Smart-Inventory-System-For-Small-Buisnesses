@@ -26,8 +26,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 public class TestDataGeneratorService {
@@ -80,8 +78,8 @@ public class TestDataGeneratorService {
         
         // Create transaction data (only for the last month)
         LocalDateTime startDate = LocalDateTime.now().minusMonths(1);
-        createBatchArrivals(15, startDate);
-        createSalesData(200, startDate);
+        createBatchArrivals(startDate);
+        createSalesData(startDate);
         
         System.out.println("Cafe test data successfully created!");
     }
@@ -131,18 +129,7 @@ public class TestDataGeneratorService {
             "Tea Treasures", "Café Equipment Pro", "Eco-Friendly Packaging", 
             "Flavor Fusion", "Beverage Distributors Inc."
         };
-        
-        String[] descriptions = {
-            "Premium coffee bean supplier",
-            "Local organic dairy products",
-            "Fresh pastries and desserts",
-            "Specialty teas from around the world",
-            "Professional coffee equipment",
-            "Sustainable disposable products",
-            "Syrups and flavor additives",
-            "Bottled and canned beverages"
-        };
-        
+
         for (int i = 0; i < supplierNames.length; i++) {
             Supplier supplier = new Supplier();
             supplier.setName(supplierNames[i]);
@@ -418,7 +405,7 @@ public class TestDataGeneratorService {
         adminUser = userRepository.save(admin);
     }
     
-    private void createBatchArrivals(int count, LocalDateTime startDate) {
+    private void createBatchArrivals(LocalDateTime startDate) {
         // Create batch arrivals within the last month
         long daysBetween = ChronoUnit.DAYS.between(startDate, LocalDateTime.now());
         
@@ -439,7 +426,7 @@ public class TestDataGeneratorService {
             // Add batch arrival items for all products from this supplier
             List<Product> supplierProducts = products.stream()
                 .filter(p -> p.getSupplier().getSupplierId().equals(supplier.getSupplierId()))
-                .collect(Collectors.toList());
+                .toList();
                 
             for (Product product : supplierProducts) {
                 BatchArrivalItem item = new BatchArrivalItem();
@@ -473,7 +460,7 @@ public class TestDataGeneratorService {
         }
         
         // Create a few more random batch arrivals if needed
-        int additionalBatchArrivals = Math.max(0, count - suppliers.size());
+        int additionalBatchArrivals = Math.max(0, 15 - suppliers.size());
         for (int i = 0; i < additionalBatchArrivals; i++) {
             Supplier supplier = suppliers.get(random.nextInt(suppliers.size()));
             
@@ -492,7 +479,7 @@ public class TestDataGeneratorService {
             // Add 1-5 random products from this supplier
             List<Product> supplierProducts = products.stream()
                 .filter(p -> p.getSupplier().getSupplierId().equals(supplier.getSupplierId()))
-                .collect(Collectors.toList());
+                .toList();
                 
             int itemCount = 1 + random.nextInt(Math.min(5, supplierProducts.size()));
             
@@ -536,11 +523,11 @@ public class TestDataGeneratorService {
         }
     }
     
-    private void createSalesData(int count, LocalDateTime startDate) {
+    private void createSalesData(LocalDateTime startDate) {
         // Distribute sales throughout the period (last month)
         long daysBetween = ChronoUnit.DAYS.between(startDate, LocalDateTime.now());
         
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < 200; i++) {
             SalesTransaction transaction = new SalesTransaction();
             
             // Random date within the period
@@ -616,7 +603,7 @@ public class TestDataGeneratorService {
                     && item.getQuantityRemaining().compareTo(BigDecimal.ZERO) > 0)
             .sorted(Comparator.comparing(item -> 
                     item.getExpiryDate() != null ? item.getExpiryDate() : LocalDate.MAX))
-            .collect(Collectors.toList());
+            .toList();
         
         BigDecimal remainingToDeduct = quantity;
         
@@ -740,7 +727,7 @@ public class TestDataGeneratorService {
                 } else {
                     multiplier = 1.0; // Winter - low season
                 }
-            } else { // winter
+            } else {
                 // Winter product: peak in December-February
                 if (month == 12 || month <= 2) {
                     multiplier = 5.0; // 5x more in winter

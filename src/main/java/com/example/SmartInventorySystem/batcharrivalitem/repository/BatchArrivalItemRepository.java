@@ -24,28 +24,13 @@ public interface BatchArrivalItemRepository extends JpaRepository<BatchArrivalIt
     BigDecimal findAverageInventoryValue(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
 
-    @Query("SELECT DISTINCT bai.product " +
-            "FROM BatchArrivalItem bai " +
-            "WHERE bai.quantityRemaining = 0")
-    List<Product> findProductsWithZeroRemainingStock();
-
-    @Query("SELECT bai.product " +
-            "FROM BatchArrivalItem bai " +
-            "WHERE bai.quantityRemaining > 100 " + // Adjust threshold as needed
-            "AND bai.product.productId NOT IN (" +
-            "   SELECT si.product.productId FROM SalesItem si" +
-            ")")
-    List<Product> findExcessStockProducts();
-
-    List<BatchArrivalItem> findByExpiryDateBefore(LocalDate thresholdDate);
-
     @Query("SELECT SUM(bai.quantityRemaining) " +
             "FROM BatchArrivalItem bai " +
             "WHERE bai.product.productId = :productId")
     BigDecimal findRemainingStockByProduct(@Param("productId") Long productId);
 
     @Query(value = """
-        SELECT bai.* 
+        SELECT bai.*
         FROM batch_arrival_items bai
         JOIN batch_arrivals ba ON bai.arrival_id = ba.arrival_id
         WHERE ba.arrival_date = (

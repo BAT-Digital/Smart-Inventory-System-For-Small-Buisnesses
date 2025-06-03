@@ -19,11 +19,19 @@ import java.util.stream.Collectors;
 @Service
 public class InventoryAnalysisService {
 
-    @Autowired
     private SalesItemRepository salesItemRepository;
 
+    private final BatchArrivalItemRepository batchArrivalItemRepository;
+
+    public InventoryAnalysisService(BatchArrivalItemRepository batchArrivalItemRepository) {
+        this.batchArrivalItemRepository = batchArrivalItemRepository;
+    }
+
     @Autowired
-    private BatchArrivalItemRepository batchArrivalItemRepository;
+    public InventoryAnalysisService(SalesItemRepository salesItemRepository, BatchArrivalItemRepository batchArrivalItemRepository) {
+        this.salesItemRepository = salesItemRepository;
+        this.batchArrivalItemRepository = batchArrivalItemRepository;
+    }
 
     public BigDecimal calculateInventoryTurnoverRatio(LocalDateTime startDate, LocalDateTime endDate) {
         // Calculate COGS

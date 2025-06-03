@@ -6,13 +6,11 @@ public class NotificationTypes {
         LOW_STOCK,
         EXPIRATION_ALERT,
         STOCK_ADJUSTMENT,
-        INVENTORY_COUNT,
-        
+
         // System notifications
         SYSTEM_ERROR,
         SYSTEM_WARNING,
-        SYSTEM_INFO,
-        BACKUP_COMPLETED
+        SYSTEM_INFO
     }
 
     public enum NotificationCategory {

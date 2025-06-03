@@ -23,20 +23,43 @@ import java.util.Map;
 @RequestMapping("/api/dashboard")
 public class DashboardController {
 
-    @Autowired
     private InventoryAnalysisService inventoryService;
 
-    @Autowired
     private SalesTrendAnalysisService salesTrendAnalysisService;
 
-    @Autowired
     private SalesItemRepository salesItemRepository;
 
-    @Autowired
     private BatchArrivalItemRepository batchArrivalItemRepository;
 
+    private final StockAnalysisService stockAnalysisService;
+
+    public DashboardController(StockAnalysisService stockAnalysisService) {
+        this.stockAnalysisService = stockAnalysisService;
+    }
+
     @Autowired
-    private StockAnalysisService stockAnalysisService;
+    public DashboardController(BatchArrivalItemRepository batchArrivalItemRepository, StockAnalysisService stockAnalysisService) {
+        this.batchArrivalItemRepository = batchArrivalItemRepository;
+        this.stockAnalysisService = stockAnalysisService;
+    }
+
+
+    public DashboardController(SalesItemRepository salesItemRepository, StockAnalysisService stockAnalysisService) {
+        this.salesItemRepository = salesItemRepository;
+        this.stockAnalysisService = stockAnalysisService;
+    }
+
+
+    public DashboardController(SalesTrendAnalysisService salesTrendAnalysisService, StockAnalysisService stockAnalysisService) {
+        this.salesTrendAnalysisService = salesTrendAnalysisService;
+        this.stockAnalysisService = stockAnalysisService;
+    }
+
+
+    public DashboardController(InventoryAnalysisService inventoryService, StockAnalysisService stockAnalysisService) {
+        this.inventoryService = inventoryService;
+        this.stockAnalysisService = stockAnalysisService;
+    }
 
     @GetMapping("/inventory-turnover")
     public BigDecimal getInventoryTurnoverRatio() {
