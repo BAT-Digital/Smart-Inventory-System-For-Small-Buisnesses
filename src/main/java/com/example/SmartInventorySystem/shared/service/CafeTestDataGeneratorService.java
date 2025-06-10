@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 @Service
 public class CafeTestDataGeneratorService {
@@ -43,9 +42,9 @@ public class CafeTestDataGeneratorService {
     private final Random random = new Random();
 
     // For storing generated data for easy access
-    private List<Category> categories = new ArrayList<>();
-    private List<Supplier> suppliers = new ArrayList<>();
-    private List<Product> products = new ArrayList<>();
+    private final List<Category> categories = new ArrayList<>();
+    private final List<Supplier> suppliers = new ArrayList<>();
+    private final List<Product> products = new ArrayList<>();
     private User adminUser;
 
     public CafeTestDataGeneratorService(CategoryRepository categoryRepository, 
@@ -79,8 +78,8 @@ public class CafeTestDataGeneratorService {
         
         // Create transaction data (only for the last month)
         LocalDateTime startDate = LocalDateTime.now().minusMonths(1);
-        createBatchArrivals(15, startDate);
-        createSalesData(200, startDate);
+        createBatchArrivals(startDate);
+        createSalesData(startDate);
         
         System.out.println("Cafe test data successfully created!");
     }
@@ -418,7 +417,7 @@ public class CafeTestDataGeneratorService {
         adminUser = userRepository.save(admin);
     }
     
-    private void createBatchArrivals(int count, LocalDateTime startDate) {
+    private void createBatchArrivals(LocalDateTime startDate) {
         // Create batch arrivals within the last month
         long daysBetween = ChronoUnit.DAYS.between(startDate, LocalDateTime.now());
         
@@ -439,7 +438,7 @@ public class CafeTestDataGeneratorService {
             // Add batch arrival items for all products from this supplier
             List<Product> supplierProducts = products.stream()
                 .filter(p -> p.getSupplier().getSupplierId().equals(supplier.getSupplierId()))
-                .collect(Collectors.toList());
+                .toList();
                 
             for (Product product : supplierProducts) {
                 BatchArrivalItem item = new BatchArrivalItem();
@@ -473,7 +472,7 @@ public class CafeTestDataGeneratorService {
         }
         
         // Create a few more random batch arrivals if needed
-        int additionalBatchArrivals = Math.max(0, count - suppliers.size());
+        int additionalBatchArrivals = Math.max(0, 15 - suppliers.size());
         for (int i = 0; i < additionalBatchArrivals; i++) {
             Supplier supplier = suppliers.get(random.nextInt(suppliers.size()));
             
@@ -492,7 +491,7 @@ public class CafeTestDataGeneratorService {
             // Add 1-5 random products from this supplier
             List<Product> supplierProducts = products.stream()
                 .filter(p -> p.getSupplier().getSupplierId().equals(supplier.getSupplierId()))
-                .collect(Collectors.toList());
+                .toList();
                 
             int itemCount = 1 + random.nextInt(Math.min(5, supplierProducts.size()));
             
@@ -536,11 +535,11 @@ public class CafeTestDataGeneratorService {
         }
     }
     
-    private void createSalesData(int count, LocalDateTime startDate) {
+    private void createSalesData(LocalDateTime startDate) {
         // Distribute sales throughout the period (last month)
         long daysBetween = ChronoUnit.DAYS.between(startDate, LocalDateTime.now());
         
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < 200; i++) {
             SalesTransaction transaction = new SalesTransaction();
             
             // Random date within the period
@@ -616,7 +615,7 @@ public class CafeTestDataGeneratorService {
                     && item.getQuantityRemaining().compareTo(BigDecimal.ZERO) > 0)
             .sorted(Comparator.comparing(item -> 
                     item.getExpiryDate() != null ? item.getExpiryDate() : LocalDate.MAX))
-            .collect(Collectors.toList());
+            .toList();
         
         BigDecimal remainingToDeduct = quantity;
         

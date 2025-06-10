@@ -14,7 +14,9 @@ import com.example.SmartInventorySystem.salestransaction.entity.SalesTransaction
 import com.example.SmartInventorySystem.salestransaction.repository.SalesTransactionRepository;
 import com.example.SmartInventorySystem.shared.dto.ProductRequestDTO;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -181,17 +183,25 @@ public class SaleService {
 
     @Transactional
     public String cancelCheck(Long transactionId) {
-        SalesTransaction salesTransaction = salesTransactionRepository.findById(transactionId).orElseThrow(() -> new RuntimeException("SalesTransaction not found with ID: " + transactionId));
 
-        // Delete associated sales items
+        // Attempt to find the sales transaction by ID, or throw 404 if not found
+        SalesTransaction salesTransaction = salesTransactionRepository.findById(transactionId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "SalesTransaction not found with ID: " + transactionId
+                ));
+
+        // Find and delete all sales items associated with this transaction
         List<SalesItem> salesItems = salesItemRepository.findBySalesTransaction(salesTransaction);
         salesItemRepository.deleteAll(salesItems);
 
-        // Update the sales transaction
+        // Set the transaction total amount to zero and update its status to CANCELED
         salesTransaction.setTotalAmount(BigDecimal.ZERO);
         salesTransaction.setStatus("CANCELED");
+
         salesTransactionRepository.save(salesTransaction);
 
         return "Sale transaction canceled successfully.";
     }
+
 }

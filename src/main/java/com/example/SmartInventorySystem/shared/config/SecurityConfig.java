@@ -1,6 +1,8 @@
 package com.example.SmartInventorySystem.shared.config;
 
 import com.example.SmartInventorySystem.shared.service.MyUserDetailsService;
+import com.example.SmartInventorySystem.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,10 +33,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new MyUserDetailsService();
-    }
+    @Autowired
+    private UserDetailsService userDetailsService;
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -54,7 +55,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
+            .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> 
                 auth.requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
                     .requestMatchers("/api/**").permitAll()
@@ -73,7 +74,7 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService());
+        provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }

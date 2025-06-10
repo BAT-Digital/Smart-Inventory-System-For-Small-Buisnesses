@@ -23,18 +23,27 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    UserService userService;
+    final UserService userService;
 
 
-    @Autowired
     AuthenticationManager authenticationManager;
 
-    @PostMapping("/register")
-    public String register(@RequestBody User user) {
-        userService.createUser(user);
-        return "User has created";
+    public AuthController(UserService userService) {
+        this.userService = userService;
     }
+
+    @Autowired
+    public AuthController(UserService userService, AuthenticationManager authenticationManager) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody User user) {
+        userService.createUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body("User has been created");
+    }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequestDTO request) {
@@ -45,14 +54,13 @@ public class AuthController {
 
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-            // Assuming your UserDetails is custom and contains username + ID
             MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
 
 
             return ResponseEntity.ok(Map.of(
                     "username", userDetails.getUsername(),
                     "id", userDetails.getUserId(),
-                    "role", userDetails.getRole()// or other identifier
+                    "role", userDetails.getRole()
             ));
 
         } catch (BadCredentialsException e) {

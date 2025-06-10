@@ -1,7 +1,6 @@
 package com.example.SmartInventorySystem.writeoff.controller;
 
 
-import com.example.SmartInventorySystem.product.entity.Product;
 import com.example.SmartInventorySystem.writeoff.dto.WriteOffDTO;
 import com.example.SmartInventorySystem.writeoff.entity.WriteOff;
 import com.example.SmartInventorySystem.writeoff.service.WriteOffService;

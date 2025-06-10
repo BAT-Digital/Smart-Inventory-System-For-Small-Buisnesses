@@ -6,29 +6,28 @@ import com.example.SmartInventorySystem.productrecipe.dto.ProductRecipeDTO;
 import com.example.SmartInventorySystem.productrecipe.entity.ProductRecipe;
 import com.example.SmartInventorySystem.productrecipe.repository.ProductRecipeRepository;
 import com.example.SmartInventorySystem.product.entity.Product;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProductRecipeService {
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     private final ProductRecipeRepository productRecipeRepository;
 
-    public ProductRecipeService(ProductRecipeRepository productRecipeRepository) {
+    public ProductRecipeService(ProductRecipeRepository productRecipeRepository, ProductRepository productRepository) {
         this.productRecipeRepository = productRecipeRepository;
+        this.productRepository = productRepository;
     }
 
     public List<ProductRecipe> getAllProductRecipes() {
         return productRecipeRepository.findAll();
-    }
-
-    public List<ProductRecipe> getByFinalProduct(Product product) {
-        return productRecipeRepository.findByFinalProduct(product);
     }
 
     public List<ProductRecipe> getByFinalProductId(Long productId) {
@@ -43,26 +42,36 @@ public class ProductRecipeService {
         return productRecipeRepository.save(productRecipe);
     }
 
-    public String processProductRecipes(List<ProductRecipeDTO> productRecipeDTOS) {
-        for (ProductRecipeDTO productRecipeDTO : productRecipeDTOS) {
-            try {
-                ProductRecipe productRecipe = new ProductRecipe();
-                productRecipe.setQuantityRequired(productRecipeDTO.getQuantityRequired());
+    @Transactional
+    public ResponseEntity<?> processProductRecipes(List<ProductRecipeDTO> productRecipeDTOS) {
+        List<ProductRecipe> savedRecipes = new ArrayList<>();
 
-                productRepository.findById(productRecipeDTO.getFinalProductId())
-                        .ifPresent(productRecipe::setFinalProduct);
+        for (ProductRecipeDTO dto : productRecipeDTOS) {
 
-                productRepository.findById(productRecipeDTO.getIngredientId())
-                        .ifPresent(productRecipe::setIngredient);
-
-                productRecipeRepository.save(productRecipe);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            if (dto.getFinalProductId() == null || dto.getIngredientId() == null) {
+                return ResponseEntity.badRequest().body("Missing product or ingredient ID in input");
             }
+
+            ProductRecipe recipe = new ProductRecipe();
+            recipe.setQuantityRequired(dto.getQuantityRequired());
+
+            Optional<Product> finalProduct = productRepository.findById(dto.getFinalProductId());
+            Optional<Product> ingredient = productRepository.findById(dto.getIngredientId());
+
+            if (finalProduct.isEmpty() || ingredient.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found for ID: " +
+                        dto.getFinalProductId() + " or Ingredient ID: " + dto.getIngredientId());
+            }
+
+            recipe.setFinalProduct(finalProduct.get());
+            recipe.setIngredient(ingredient.get());
+
+            savedRecipes.add(productRecipeRepository.save(recipe));
         }
 
-        return "Success";
+        return ResponseEntity.ok("Recipes processed: " + savedRecipes.size());
     }
+
 
     public ProductRecipe updateProductRecipe(Long id, ProductRecipe updatedProductRecipe) {
         return productRecipeRepository.findById(id).map(recipe -> {

@@ -9,7 +9,6 @@ import com.example.SmartInventorySystem.supplier.repository.SupplierRepository;
 import com.example.SmartInventorySystem.user.entity.User;
 import com.example.SmartInventorySystem.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,13 +18,13 @@ import java.util.Optional;
 public class BatchArrivalService {
 
     private final BatchArrivalRepository batchArrivalRepository;
-    @Autowired
-    private SupplierRepository supplierRepository;
+    private final SupplierRepository supplierRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-    public BatchArrivalService(BatchArrivalRepository batchArrivalRepository) {
+    private final UserRepository userRepository;
+    public BatchArrivalService(BatchArrivalRepository batchArrivalRepository, SupplierRepository supplierRepository, UserRepository userRepository) {
         this.batchArrivalRepository = batchArrivalRepository;
+        this.supplierRepository = supplierRepository;
+        this.userRepository = userRepository;
     }
 
     public List<BatchArrival> getAllBatchArrivals() {
@@ -49,7 +48,7 @@ public class BatchArrivalService {
     public BatchArrival processBatchArrival(BatchArrivalDTO dto) {
         // Fetch Supplier
         Optional<Supplier> supplierOpt = supplierRepository.findById(dto.getSupplierId());
-        if (!supplierOpt.isPresent()) {
+        if (supplierOpt.isEmpty()) {
             return null;
         }
         Supplier supplier = supplierOpt.get();
@@ -61,7 +60,7 @@ public class BatchArrivalService {
 
         // Fetch and set the User who added this batch arrival.
         Optional<User> userOpt = userRepository.findById(dto.getAddedById());
-        if (!userOpt.isPresent()) {
+        if (userOpt.isEmpty()) {
             return null;
         }
         batchArrival.setAddedBy(userOpt.get());

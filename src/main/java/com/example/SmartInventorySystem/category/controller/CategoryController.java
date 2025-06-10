@@ -3,7 +3,6 @@ package com.example.SmartInventorySystem.category.controller;
 import com.example.SmartInventorySystem.category.dto.CategoryDTO;
 import com.example.SmartInventorySystem.category.entity.Category;
 import com.example.SmartInventorySystem.category.service.CategoryService;
-import com.example.SmartInventorySystem.product.entity.Product;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

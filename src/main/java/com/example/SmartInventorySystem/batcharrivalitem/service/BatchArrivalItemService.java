@@ -45,13 +45,7 @@ public class BatchArrivalItemService {
                     BatchArrival batchArrival = batchArrivalOpt.get();
                     Product product = productOpt.get();
 
-                    BatchArrivalItem batchArrivalItem = new BatchArrivalItem();
-                    batchArrivalItem.setBatchArrival(batchArrival);
-                    batchArrivalItem.setProduct(product);
-                    batchArrivalItem.setQuantityReceived(itemDTO.getQuantityReceived());
-                    batchArrivalItem.setQuantityRemaining(itemDTO.getQuantityReceived());
-                    batchArrivalItem.setExpiryDate(itemDTO.getExpiryDate());
-                    batchArrivalItem.setUnitCost(itemDTO.getUnitCost());
+                    BatchArrivalItem batchArrivalItem = getBatchArrivalItem(itemDTO, batchArrival, product);
                     batchArrivalItems.add(batchArrivalItem);
 
                     responseMessage.append("Processed BatchArrivalItem for product: ")
@@ -79,39 +73,15 @@ public class BatchArrivalItemService {
         }
     }
 
-    @Transactional
-    public String createBatchArrivalItem(BatchArrivalItemDTO batchArrivalItemDTO) {
-        StringBuilder responseMessage = new StringBuilder();
-        Optional<BatchArrival> batchArrivalOpt = batchArrivalRepository.findById(batchArrivalItemDTO.getBatchArrivalId());
-        Optional<Product> productOpt = productRepository.findById(batchArrivalItemDTO.getProductId());
-
+    private static BatchArrivalItem getBatchArrivalItem(BatchArrivalItemDTO itemDTO, BatchArrival batchArrival, Product product) {
         BatchArrivalItem batchArrivalItem = new BatchArrivalItem();
-
-        if (batchArrivalOpt.isPresent() && productOpt.isPresent()) {
-            BatchArrival batchArrival = batchArrivalOpt.get();
-            Product product = productOpt.get();
-
-            batchArrivalItem.setBatchArrival(batchArrival);
-            batchArrivalItem.setProduct(product);
-            batchArrivalItem.setQuantityReceived(batchArrivalItemDTO.getQuantityReceived());
-            batchArrivalItem.setQuantityRemaining(batchArrivalItemDTO.getQuantityReceived());
-            batchArrivalItem.setExpiryDate(batchArrivalItemDTO.getExpiryDate());
-            batchArrivalItem.setUnitCost(batchArrivalItemDTO.getUnitCost());
-
-            responseMessage.append("Processed BatchArrivalItem for product: ")
-                    .append(product.getProductName())
-                    .append("\n");
-        } else {
-            responseMessage.append("Failed to process BatchArrivalItem: ");
-            if (batchArrivalOpt.isEmpty()) {
-                responseMessage.append("BatchArrival not found with ID: ").append(batchArrivalItemDTO.getBatchArrivalId()).append(". ");
-            }
-            if (productOpt.isEmpty()) {
-                responseMessage.append("Product not found with ID: ").append(batchArrivalItemDTO.getProductId()).append(". ");
-            }
-            return responseMessage.toString();
-        }
-        return responseMessage.toString();
+        batchArrivalItem.setBatchArrival(batchArrival);
+        batchArrivalItem.setProduct(product);
+        batchArrivalItem.setQuantityReceived(itemDTO.getQuantityReceived());
+        batchArrivalItem.setQuantityRemaining(itemDTO.getQuantityReceived());
+        batchArrivalItem.setExpiryDate(itemDTO.getExpiryDate());
+        batchArrivalItem.setUnitCost(itemDTO.getUnitCost());
+        return batchArrivalItem;
     }
 
     public List<BatchArrivalItem> getBatchArrivalItemsByArrivalId(Long arrivalId) {

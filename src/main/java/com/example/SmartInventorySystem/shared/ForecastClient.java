@@ -45,16 +45,6 @@ public class ForecastClient {
         this.productRepository = productRepository;
         this.batchArrivalItemRepository = batchArrivalItemRepository;
         this.objectMapper = new ObjectMapper();
-        
-        // Инициализируем отображение ID продуктов (если требуется)
-        // Пример: ML-сервис возвращает ID=38, но в БД этот продукт имеет ID=1
-        // productIdMapping.put(38L, 1L);
-        
-        // Добавьте здесь нужные отображения, если известно, что ID в ML-сервисе не совпадают с ID в БД
-        // productIdMapping.put(48L, 2L);
-        // productIdMapping.put(31L, 3L);
-        // productIdMapping.put(15L, 4L);
-        // productIdMapping.put(39L, 5L);
     }
 
     public ForecastResponseDTO sendCsvToForecastAPI(List<SaleRecord> sales) throws Exception {
@@ -122,12 +112,11 @@ public class ForecastClient {
         }
     }
     
-    private ForecastResponseDTO processAndEnhanceResponse(String jsonResponse) throws Exception {
+    private ForecastResponseDTO processAndEnhanceResponse(String jsonResponse) {
         try {
             System.out.println("Raw JSON response from ML service:");
             System.out.println(jsonResponse);
-            
-            // Проверка валидности JSON
+
             if (jsonResponse == null || jsonResponse.trim().isEmpty()) {
                 System.out.println("Received empty JSON response from ML service");
                 return ForecastResponseDTO.builder()
@@ -144,17 +133,14 @@ public class ForecastClient {
                         .topProducts(new ArrayList<>())
                         .build();
             }
-            
-            // Проверка наличия поля top_products
+
             JsonNode topProductsNode = rootNode.get("top_products");
             if (topProductsNode == null) {
                 System.out.println("JSON response does not contain 'top_products' field");
-                // Попробуем другие возможные форматы
                 if (rootNode.isArray()) {
                     System.out.println("JSON response is an array, using it directly as top products");
                     topProductsNode = rootNode;
                 } else {
-                    // Выведем все поля в JSON
                     System.out.println("Available fields in JSON response:");
                     rootNode.fieldNames().forEachRemaining(name -> 
                         System.out.println(" - " + name));
@@ -166,7 +152,6 @@ public class ForecastClient {
             }
             
             System.out.println("=== Starting product diagnostics ===");
-            // Проверим все ID продуктов сразу
             List<Long> allMlProductIds = new ArrayList<>();
             List<Long> allDbProductIds = new ArrayList<>();
             for (JsonNode productNode : topProductsNode) {
@@ -182,37 +167,32 @@ public class ForecastClient {
                     System.out.println("Error reading product ID: " + e.getMessage());
                 }
             }
-            
-            // Проверим наличие этих продуктов в базе данных
+
             if (!allDbProductIds.isEmpty()) {
                 List<Product> existingProducts = productRepository.findAllById(allDbProductIds);
                 System.out.println("Found " + existingProducts.size() + " products out of " + allDbProductIds.size());
-                
-                // Выведем информацию о найденных продуктах
+
                 Map<Long, String> foundProductNames = new HashMap<>();
                 for (Product product : existingProducts) {
                     System.out.println("Found product: ID=" + product.getProductId() + ", Name=" + product.getProductName());
                     foundProductNames.put(product.getProductId(), product.getProductName());
                 }
-                
-                // Выведем информацию о ненайденных продуктах
-                List<Long> foundIds = existingProducts.stream().map(Product::getProductId).collect(java.util.stream.Collectors.toList());
+
+                List<Long> foundIds = existingProducts.stream().map(Product::getProductId).toList();
                 for (int i = 0; i < allDbProductIds.size(); i++) {
                     Long dbId = allDbProductIds.get(i);
                     Long mlId = allMlProductIds.get(i);
                     
                     if (!foundIds.contains(dbId)) {
                         System.out.println("Product with ML ID=" + mlId + ", DB ID=" + dbId + " was NOT found in database");
-                        
-                        // Попробуем найти продукт напрямую через findById
+
                         Optional<Product> product = productRepository.findById(dbId);
                         if (product.isPresent()) {
                             System.out.println("But findById found product: ID=" + product.get().getProductId() + ", Name=" + product.get().getProductName());
                             foundProductNames.put(dbId, product.get().getProductName());
                         } else {
                             System.out.println("findById also did not find product with DB ID " + dbId);
-                            
-                            // Проверим, есть ли другие продукты, которые могут соответствовать
+
                             System.out.println("Searching for possible product matches...");
                             List<Product> allProducts = productRepository.findAll();
                             System.out.println("Total products in database: " + allProducts.size());
@@ -231,15 +211,14 @@ public class ForecastClient {
             for (JsonNode productNode : topProductsNode) {
                 try {
                     Long mlProductId = productNode.get("product_id").asLong();
-                    
-                    // Применяем отображение ID, если оно существует
+
                     Long dbProductId = productIdMapping.getOrDefault(mlProductId, mlProductId);
                     System.out.println("Processing product: ML ID=" + mlProductId + ", DB ID=" + dbProductId);
                     
                     BigDecimal forecastedSales = new BigDecimal(productNode.get("forecasted_sales").asText());
                     String peakDay = productNode.get("peak_day").asText();
                     BigDecimal peakValue = new BigDecimal(productNode.get("peak_value").asText());
-                    
+
                     // Get additional product information from database using mapped ID
                     Optional<Product> productOpt = productRepository.findById(dbProductId);
                     
@@ -252,7 +231,6 @@ public class ForecastClient {
                             currentStock = batchArrivalItemRepository.findRemainingStockByProduct(dbProductId);
                         } catch (Exception e) {
                             System.out.println("Error getting stock for product ID " + dbProductId + ": " + e.getMessage());
-                            currentStock = null;
                         }
                         
                         if (currentStock == null) {
@@ -323,7 +301,7 @@ public class ForecastClient {
             }
             
             // Send notification with restock recommendations if we have any products
-            if (enhancedProducts.size() > 0) {
+            if (!enhancedProducts.isEmpty()) {
                 try {
                     notificationService.sendAICompletionNotification(
                             notificationMessage.toString(),
