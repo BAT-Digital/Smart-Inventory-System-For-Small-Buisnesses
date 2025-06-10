@@ -10,6 +10,7 @@ import com.example.SmartInventorySystem.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +127,7 @@ public class BatchArrivalItemService {
     }
 
     public List<BatchArrivalItem> getByProductBarcode(String barcode) {
-        return batchArrivalItemRepository.findByProduct_Barcode(barcode);
+        return batchArrivalItemRepository.findByProduct_BarcodeAndQuantityRemainingGreaterThan(barcode, BigDecimal.ZERO);
     }
 
     public List<BatchArrivalItem> getByProductBarcodeAndExpiryDate(String barcode, LocalDate expiryDate) {

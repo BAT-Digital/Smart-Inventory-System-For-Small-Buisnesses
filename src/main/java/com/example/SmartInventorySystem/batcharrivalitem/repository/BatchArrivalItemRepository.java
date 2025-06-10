@@ -17,7 +17,7 @@ public interface BatchArrivalItemRepository extends JpaRepository<BatchArrivalIt
     List<BatchArrivalItem> findByProductAndExpiryDateIsNull(Product product);
     List<BatchArrivalItem> findByProductAndExpiryDateIsNullOrderByBatchItemIdAsc(Product product);
 
-    List<BatchArrivalItem> findByProduct_Barcode(String barcode);
+    List<BatchArrivalItem> findByProduct_BarcodeAndQuantityRemainingGreaterThan(String barcode, BigDecimal quantity);
     List<BatchArrivalItem> findByProduct_BarcodeAndExpiryDate(String barcode, LocalDate expiryDate);
 
     @Query("SELECT AVG(bai.quantityRemaining * bai.unitCost) " +
