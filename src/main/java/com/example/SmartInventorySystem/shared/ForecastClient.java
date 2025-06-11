@@ -92,8 +92,6 @@ public class ForecastClient {
                     System.out.println("Response body is null");
                 }
                 
-                notificationService.sendAICompletionNotification("Prediction results are ready go check it!", NotificationTypes.NotificationPriority.LOW);
-                
                 if (response.getStatusCode() == HttpStatus.OK) {
                     // 4. Process and enhance the response
                     return processAndEnhanceResponse(response.getBody());
